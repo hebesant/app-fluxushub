@@ -1,7 +1,20 @@
+"use client";
+
 import { AppSidebar } from "@/components/layout/AppSidebar";
 import { AppTopbar } from "@/components/layout/AppTopbar";
+import { useCurrentUser } from "@/lib/auth";
 
 export function AppShell({ children }: Readonly<{ children: React.ReactNode }>) {
+  const { user, isLoading } = useCurrentUser();
+
+  if (isLoading) {
+    return (
+      <main className="flex min-h-screen items-center justify-center bg-neutral-950 text-white">
+        <p className="text-sm text-neutral-300">Carregando FluxusHub...</p>
+      </main>
+    );
+  }
+
   return (
     <main className="min-h-screen bg-neutral-950 text-white">
       <div className="fixed inset-0 -z-10 bg-[linear-gradient(125deg,rgba(2,6,23,1)_0%,rgba(2,6,23,0.94)_48%,rgba(1,73,247,0.28)_100%)]" />
@@ -11,7 +24,7 @@ export function AppShell({ children }: Readonly<{ children: React.ReactNode }>) 
         <AppSidebar />
 
         <section className="min-w-0 px-4 py-4 sm:px-6 lg:px-8">
-          <AppTopbar />
+          <AppTopbar user={user} />
           <div className="mx-auto mt-6 max-w-7xl">{children}</div>
         </section>
       </div>

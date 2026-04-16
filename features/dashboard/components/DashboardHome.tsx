@@ -1,47 +1,46 @@
+"use client";
+
 import {
   ArrowUpRight,
-  CheckCircle2,
   MessageCircle,
-  MousePointerClick,
-  Send,
+  QrCode,
   UsersRound,
 } from "lucide-react";
+import Link from "next/link";
 import { Button } from "@/components/ui/button";
+import { useCurrentUser } from "@/lib/auth";
 
 const metrics = [
   {
-    label: "Mensagens enviadas",
-    value: "128.4k",
-    detail: "+18% nos ultimos 7 dias",
-    icon: Send,
+    label: "Conexao WhatsApp",
+    value: "QR Code",
+    detail: "Configure a primeira instancia",
+    icon: QrCode,
   },
   {
-    label: "Taxa de entrega",
-    value: "98.2%",
-    detail: "Fila saudavel",
-    icon: CheckCircle2,
-  },
-  {
-    label: "Cliques",
-    value: "42.8%",
-    detail: "Melhor campanha: Abril",
-    icon: MousePointerClick,
-  },
-  {
-    label: "Contatos ativos",
-    value: "36.9k",
-    detail: "3 segmentos em alta",
+    label: "Contatos",
+    value: "Base",
+    detail: "Cadastre seus primeiros clientes",
     icon: UsersRound,
+  },
+  {
+    label: "Envios",
+    value: "Depois",
+    detail: "Entram apos conectar a instancia",
+    icon: MessageCircle,
   },
 ];
 
-const campaigns = [
-  ["Lancamento Abril", "WhatsApp", "Ativa", "18k"],
-  ["Recuperacao carrinho", "SMS", "Pausada", "7.4k"],
-  ["Newsletter clientes", "E-mail", "Agendada", "22k"],
+const steps = [
+  ["1", "Conectar WhatsApp", "Crie uma instancia e use o QR Code quando a Evolution entrar."],
+  ["2", "Cadastrar contatos", "Organize os primeiros clientes com nome, telefone e tags."],
+  ["3", "Enviar teste", "Depois da conexao real, validamos uma mensagem controlada."],
 ];
 
 export function DashboardHome() {
+  const { user } = useCurrentUser();
+  const workspaceName = user?.memberships[0]?.workspace_name ?? "sua loja";
+
   return (
     <div className="space-y-6">
       <section className="relative overflow-hidden rounded-lg border border-white/10 bg-white/8 p-6 shadow-[0_24px_90px_rgba(0,0,0,0.28)] backdrop-blur">
@@ -52,22 +51,27 @@ export function DashboardHome() {
               Visao geral
             </p>
             <h2 className="mt-3 max-w-3xl text-3xl font-semibold leading-tight text-white sm:text-4xl">
-              Acompanhe cada disparo sem perder o ritmo da operacao.
+              {workspaceName} pronta para conectar o primeiro WhatsApp.
             </h2>
             <p className="mt-4 max-w-2xl leading-7 text-neutral-300">
-              Campanhas, contatos e automacoes conectados em um painel feito
-              para decidir rapido.
+              O MVP começa com QR Code, instancia conectada e contatos. Campanhas
+              entram depois que esse fluxo estiver confiavel.
             </p>
           </div>
 
-          <Button className="h-11 rounded-lg bg-primary-500 px-5 text-white shadow-[0_0_36px_rgba(1,73,247,0.42)] hover:bg-primary-400">
-            Nova campanha
-            <ArrowUpRight className="size-4" />
+          <Button
+            asChild
+            className="h-11 rounded-lg bg-primary-500 px-5 text-white shadow-[0_0_36px_rgba(1,73,247,0.42)] hover:bg-primary-400"
+          >
+            <Link href="/whatsapp">
+              Conectar WhatsApp
+              <ArrowUpRight className="size-4" />
+            </Link>
           </Button>
         </div>
       </section>
 
-      <section className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
+      <section className="grid gap-4 md:grid-cols-3">
         {metrics.map((metric) => {
           const Icon = metric.icon;
 
@@ -92,54 +96,59 @@ export function DashboardHome() {
         })}
       </section>
 
-      <section className="grid gap-6 xl:grid-cols-[1.2fr_0.8fr]">
+      <section className="grid gap-6 xl:grid-cols-[1fr_1fr]">
         <div className="rounded-lg border border-white/10 bg-white/8 p-5 backdrop-blur">
           <div className="flex items-center justify-between gap-4">
-            <h3 className="text-lg font-semibold">Campanhas recentes</h3>
+            <h3 className="text-lg font-semibold">Onboarding</h3>
             <Button
+              asChild
               variant="outline"
               className="border-white/10 bg-white/8 text-white hover:bg-white/15"
             >
-              Ver todas
+              <Link href="/contacts">Abrir contatos</Link>
             </Button>
           </div>
 
           <div className="mt-5 overflow-hidden rounded-lg border border-white/10">
-            {campaigns.map(([name, channel, status, queue]) => (
+            {steps.map(([number, title, description]) => (
               <div
-                key={name}
-                className="grid grid-cols-[1fr_110px_110px_80px] items-center gap-4 border-b border-white/10 px-4 py-4 text-sm last:border-b-0"
+                key={title}
+                className="grid grid-cols-[44px_1fr] items-start gap-4 border-b border-white/10 px-4 py-4 text-sm last:border-b-0"
               >
-                <span className="font-medium text-white">{name}</span>
-                <span className="text-neutral-300">{channel}</span>
-                <span className="text-primary-200">{status}</span>
-                <span className="text-right text-neutral-300">{queue}</span>
+                <span className="flex size-8 items-center justify-center rounded-lg bg-primary-500 text-xs font-semibold text-white">
+                  {number}
+                </span>
+                <span>
+                  <span className="block font-medium text-white">{title}</span>
+                  <span className="mt-1 block text-neutral-300">{description}</span>
+                </span>
               </div>
             ))}
           </div>
         </div>
 
         <div className="rounded-lg border border-white/10 bg-white/8 p-5 backdrop-blur">
-          <h3 className="text-lg font-semibold">Fila inteligente</h3>
+          <h3 className="text-lg font-semibold">Conexao via QR Code</h3>
           <div className="mt-5 space-y-4">
             <div className="rounded-lg bg-white px-4 py-3 text-neutral-950">
               <div className="flex items-center gap-2 text-sm font-semibold">
                 <MessageCircle className="size-4 text-primary-500" />
-                Proximo envio
+                Foco atual
               </div>
               <p className="mt-2 text-sm text-neutral-600">
-                4.200 contatos entram na janela ideal as 14:30.
+                Criar a instancia no app, depois plugar a Evolution API para gerar
+                o QR Code real.
               </p>
             </div>
 
             <div className="grid grid-cols-2 gap-3">
               <div className="rounded-lg border border-white/10 bg-neutral-950/50 p-4">
-                <p className="text-xs text-neutral-400">Aguardando</p>
-                <p className="mt-1 text-2xl font-semibold">12k</p>
+                <p className="text-xs text-neutral-400">Status inicial</p>
+                <p className="mt-1 text-2xl font-semibold">Offline</p>
               </div>
               <div className="rounded-lg border border-white/10 bg-neutral-950/50 p-4">
-                <p className="text-xs text-neutral-400">Prioridade</p>
-                <p className="mt-1 text-2xl font-semibold">2.8k</p>
+                <p className="text-xs text-neutral-400">Metodo</p>
+                <p className="mt-1 text-2xl font-semibold">QR</p>
               </div>
             </div>
           </div>
