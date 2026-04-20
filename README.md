@@ -1,36 +1,131 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Fluxus Hub App
 
-## Getting Started
+Frontend web da Fluxus Hub para operar dashboard, contatos, campanhas, instancias de WhatsApp e configuracoes.
 
-First, run the development server:
+Este projeto consome a API do repositorio `api-fluxushub` por HTTP.
+
+## Stack
+
+- Next.js `16.2.4` com App Router
+- React `19.2.4`
+- TypeScript
+- Tailwind CSS v4
+- shadcn/Radix UI
+- Sonner para toasts
+- Lucide React para icones
+
+## Requisitos
+
+- Node.js compativel com Next.js 16
+- `pnpm`
+- Backend `api-fluxushub` rodando localmente ou uma URL de API configurada
+
+## Configuracao Local
+
+Crie um arquivo `.env.local` se precisar apontar para outro backend:
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+cp .env.example .env.local
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+```env
+NEXT_PUBLIC_API_URL=https://api.fluxushub.com.br
+```
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+Se `NEXT_PUBLIC_API_URL` nao for definido, o app usa `http://localhost:8000`.
+Use o mesmo host do front (`localhost`) para manter o refresh cookie funcionando em desenvolvimento.
+Para desenvolvimento local, sobrescreva `.env.local` com `NEXT_PUBLIC_API_URL=http://localhost:8000`.
+Em producao, o app planejado roda em `https://app.fluxushub.com.br` e consome `https://api.fluxushub.com.br`.
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Instalar Dependencias
 
-## Learn More
+```bash
+pnpm install
+```
 
-To learn more about Next.js, take a look at the following resources:
+## Rodar Em Desenvolvimento
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+```bash
+pnpm dev
+```
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+O app fica disponivel em:
 
-## Deploy on Vercel
+```text
+http://localhost:3000
+```
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## Scripts
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+```bash
+pnpm dev
+pnpm build
+pnpm start
+pnpm lint
+pnpm test
+pnpm test:run
+```
+
+- `pnpm dev`: inicia o servidor de desenvolvimento.
+- `pnpm build`: gera build de producao.
+- `pnpm start`: serve o build de producao.
+- `pnpm lint`: executa ESLint.
+- `pnpm test`: executa Vitest em modo watch.
+- `pnpm test:run`: executa a suite uma vez para validacao local/CI.
+
+Suite basica atual: Vitest + Testing Library em ambiente `jsdom`.
+
+## Rotas Principais
+
+- `/login`: login.
+- `/accept-invite`: aceite de convite.
+- `/register`: redireciona para `/login`.
+- `/dashboard`: visao geral operacional.
+- `/contacts`: contatos, listas, tags e importacao.
+- `/campaigns`: criacao, envio e acompanhamento de campanhas.
+- `/whatsapp`: gerenciamento de instancias WhatsApp.
+- `/settings`: configuracoes do workspace, envio e conta.
+
+## Estrutura
+
+```text
+app/                 Rotas Next.js
+components/brand/    Logo e elementos de marca
+components/layout/   Shell, sidebar e topbar
+components/ui/       Componentes base estilo shadcn/Radix
+features/            Modulos de dominio
+lib/                 Cliente API, auth, navegacao e utilitarios
+public/              Logos e assets estaticos
+```
+
+## Padroes Do Projeto
+
+- Rotas em `app/` devem permanecer finas e delegar para `features/.../components`.
+- Chamadas HTTP ficam preferencialmente em `features/*/api` ou em `lib/api.ts`.
+- Estado e efeitos de tela ficam em hooks dentro de `features/*/hooks`.
+- Tipos compartilhados da API ficam em `lib/api.ts`; tipos especificos ficam em `features/*/types.ts`.
+- O app usa alias `@/*`.
+- Textos de interface estao majoritariamente em portugues.
+
+## Integracao Com Backend
+
+O cliente HTTP central fica em `lib/api.ts`.
+
+- O access token JWT fica apenas em memoria no browser.
+- O refresh token fica em cookie `HttpOnly` emitido pelo backend.
+- Requisicoes autenticadas usam `Authorization: Bearer <access_token>`.
+- O `fetch` usa `credentials: "include"` para permitir refresh via cookie.
+- Ao recarregar a pagina, o app chama `/api/auth/token/refresh/` para obter um novo access token.
+- Logout chama `/api/auth/logout/`, limpa o cookie no backend e remove o access token em memoria.
+
+## Observacoes
+
+- O tema claro/escuro usa a chave `fluxushub_theme` no `localStorage`.
+- Contatos e campanhas usam paginacao de 20 itens por pagina nos hooks atuais.
+- Listas/tags de contatos aceitam resposta paginada pela API ou arrays legados.
+- Detalhes de campanha aceitam destinatarios/eventos paginados pela API ou arrays legados.
+- A suite basica cobre importacao/payload de contatos, utils de campanha, normalizacao de detalhes e regras principais do modal de campanha.
+- O `next.config.ts` possui ajustes de Strict Mode, compressao, cabecalho `X-Powered-By` e imagens locais de `/media/**`.
+- Em producao, o dominio planejado do app e `https://app.fluxushub.com.br`.
+- O favicon SVG e configurado em `app/layout.tsx` usando logos em `public/`; nao ha `app/favicon.ico` no estado atual.
+- O backend precisa estar rodando para as telas autenticadas carregarem dados reais.

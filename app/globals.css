@@ -3,6 +3,7 @@
 @import "shadcn/tailwind.css";
 
 @custom-variant dark (&:is(.dark *));
+@custom-variant light (&:is(.light *));
 
 @theme {
   --color-primary-50: #eef4ff;
@@ -76,8 +77,8 @@
 }
 
 :root {
-  --background: #030712;
-  --foreground: #f8fafc;
+  --background: #f8fafc;
+  --foreground: #0f172a;
   --card: oklch(1 0 0);
   --card-foreground: oklch(0.145 0 0);
   --popover: oklch(1 0 0);
@@ -111,24 +112,25 @@
 }
 
 .dark {
-  --background: oklch(0.145 0 0);
-  --foreground: oklch(0.985 0 0);
-  --card: oklch(0.205 0 0);
-  --card-foreground: oklch(0.985 0 0);
-  --popover: oklch(0.205 0 0);
-  --popover-foreground: oklch(0.985 0 0);
-  --primary: oklch(0.922 0 0);
-  --primary-foreground: oklch(0.205 0 0);
-  --secondary: oklch(0.269 0 0);
-  --secondary-foreground: oklch(0.985 0 0);
-  --muted: oklch(0.269 0 0);
-  --muted-foreground: oklch(0.708 0 0);
-  --accent: oklch(0.269 0 0);
-  --accent-foreground: oklch(0.985 0 0);
+  color-scheme: dark;
+  --background: #030712;
+  --foreground: #f8fafc;
+  --card: #0f172a;
+  --card-foreground: #f8fafc;
+  --popover: #0f172a;
+  --popover-foreground: #f8fafc;
+  --primary: #0149f7;
+  --primary-foreground: #ffffff;
+  --secondary: #1e293b;
+  --secondary-foreground: #f8fafc;
+  --muted: #1e293b;
+  --muted-foreground: #94a3b8;
+  --accent: #172554;
+  --accent-foreground: #f8fafc;
   --destructive: oklch(0.704 0.191 22.216);
-  --border: oklch(1 0 0 / 10%);
-  --input: oklch(1 0 0 / 15%);
-  --ring: oklch(0.556 0 0);
+  --border: rgba(255, 255, 255, 0.1);
+  --input: rgba(255, 255, 255, 0.12);
+  --ring: rgba(90, 140, 255, 0.5);
   --chart-1: oklch(0.87 0 0);
   --chart-2: oklch(0.556 0 0);
   --chart-3: oklch(0.439 0 0);
@@ -144,6 +146,36 @@
   --sidebar-ring: oklch(0.556 0 0);
 }
 
+.light {
+  color-scheme: light;
+  --background: #f8fafc;
+  --foreground: #0f172a;
+  --card: #ffffff;
+  --card-foreground: #0f172a;
+  --popover: #ffffff;
+  --popover-foreground: #0f172a;
+  --primary: #0149f7;
+  --primary-foreground: #ffffff;
+  --secondary: #e2e8f0;
+  --secondary-foreground: #0f172a;
+  --muted: #f1f5f9;
+  --muted-foreground: #475569;
+  --accent: #e0f2fe;
+  --accent-foreground: #0f172a;
+  --destructive: #dc2626;
+  --border: rgba(15, 23, 42, 0.12);
+  --input: rgba(15, 23, 42, 0.16);
+  --ring: rgba(1, 73, 247, 0.42);
+  --sidebar: #ffffff;
+  --sidebar-foreground: #0f172a;
+  --sidebar-primary: #0149f7;
+  --sidebar-primary-foreground: #ffffff;
+  --sidebar-accent: #f1f5f9;
+  --sidebar-accent-foreground: #0f172a;
+  --sidebar-border: rgba(15, 23, 42, 0.12);
+  --sidebar-ring: rgba(1, 73, 247, 0.42);
+}
+
 @layer base {
   * {
     @apply border-border outline-ring/50;
@@ -154,5 +186,62 @@
   html {
     @apply scroll-smooth font-sans;
     scroll-padding-top: 6rem;
+  }
+}
+
+@layer utilities {
+  html.light
+    [class~="text-white"]:not([class*="bg-primary"]):not(
+      [class*="bg-red"]
+    ):not([class*="bg-emerald"]) {
+    color: #0f172a !important;
+  }
+
+  html.light [class~="text-neutral-200"],
+  html.light [class~="text-neutral-300"],
+  html.light [class~="text-neutral-400"],
+  html.light [class~="text-neutral-500"] {
+    color: #475569 !important;
+  }
+
+  html.light [class~="border-white/10"],
+  html.light [class~="border-white/15"],
+  html.light [class~="border-white/20"] {
+    border-color: rgba(15, 23, 42, 0.12) !important;
+  }
+
+  html.light [class~="bg-neutral-950"],
+  html.light [class*="bg-neutral-950/"],
+  html.light [class~="bg-neutral-900"],
+  html.light [class*="bg-neutral-900/"],
+  html.light [class~="bg-neutral-800"],
+  html.light [class*="bg-neutral-800/"] {
+    background-color: rgba(255, 255, 255, 0.86) !important;
+  }
+
+  html.light [class~="bg-white/5"],
+  html.light [class~="bg-white/8"],
+  html.light [class~="bg-white/10"],
+  html.light [class~="bg-white/15"],
+  html.light [class~="bg-white/20"] {
+    background-color: rgba(255, 255, 255, 0.78) !important;
+  }
+
+  html.light [class~="hover:bg-white/10"]:hover,
+  html.light [class~="hover:bg-white/15"]:hover {
+    background-color: #f1f5f9 !important;
+  }
+
+  html.light [class*="shadow-[0_20px_70px"] {
+    box-shadow: 0 18px 50px rgba(15, 23, 42, 0.1) !important;
+  }
+
+  html.light [class*="shadow-[0_0_30px"] {
+    box-shadow: 0 14px 32px rgba(1, 73, 247, 0.22) !important;
+  }
+
+  html.light [class~="bg-primary-500"],
+  html.light [class~="bg-primary-500"] * {
+    color: #ffffff !important;
   }
 }

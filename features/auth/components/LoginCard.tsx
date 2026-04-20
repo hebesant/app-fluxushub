@@ -2,7 +2,11 @@
 
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import { FluxusLogo } from "@/components/brand/FluxusLogo";
 import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import { apiRequest, formatApiError, saveTokens, type AuthResponse } from "@/lib/api";
 
 export function LoginCard() {
@@ -33,37 +37,42 @@ export function LoginCard() {
   }
 
   return (
-    <section className="w-full max-w-md rounded-lg border border-white/10 bg-neutral-950/72 p-6 text-white shadow-[0_24px_90px_rgba(0,0,0,0.38)] backdrop-blur-2xl backdrop-saturate-150">
-      <div>
-        <p className="text-xl font-semibold">FluxusHub</p>
-        <h1 className="mt-8 text-3xl font-semibold">Entre no painel</h1>
-        <p className="mt-3 leading-7 text-neutral-300">
+    <Card className="w-full max-w-md border-border/70 bg-card/92 shadow-[0_24px_90px_rgba(15,23,42,0.16)] backdrop-blur-2xl backdrop-saturate-150 dark:border-white/10 dark:bg-neutral-950/72 dark:shadow-[0_24px_90px_rgba(0,0,0,0.38)]">
+      <CardHeader className="p-6 pb-0">
+        <FluxusLogo
+          variant="wordmark"
+          tone="auto"
+          imageClassName="h-8 w-auto"
+        />
+        <CardTitle className="mt-8 text-3xl font-semibold">Entre no painel</CardTitle>
+        <p className="mt-3 leading-7 text-muted-foreground">
           Continue suas campanhas, acompanhe a fila e ajuste automacoes.
         </p>
-      </div>
+      </CardHeader>
 
-      <form className="mt-8 space-y-4" onSubmit={handleSubmit}>
+      <CardContent className="p-6">
+      <form className="space-y-4" onSubmit={handleSubmit}>
         <label className="block">
-          <span className="text-sm font-medium text-neutral-200">E-mail</span>
-          <input
+          <Label>E-mail</Label>
+          <Input
             type="email"
             value={email}
             onChange={(event) => setEmail(event.target.value)}
             placeholder="voce@empresa.com"
             required
-            className="mt-2 h-11 w-full rounded-lg border border-white/10 bg-white/8 px-3 text-sm text-white outline-none transition placeholder:text-neutral-500 focus:border-primary-400 focus:ring-3 focus:ring-primary-500/20"
+            className="mt-2 h-11"
           />
         </label>
 
         <label className="block">
-          <span className="text-sm font-medium text-neutral-200">Senha</span>
-          <input
+          <Label>Senha</Label>
+          <Input
             type="password"
             value={password}
             onChange={(event) => setPassword(event.target.value)}
             placeholder="Digite sua senha"
             required
-            className="mt-2 h-11 w-full rounded-lg border border-white/10 bg-white/8 px-3 text-sm text-white outline-none transition placeholder:text-neutral-500 focus:border-primary-400 focus:ring-3 focus:ring-primary-500/20"
+            className="mt-2 h-11"
           />
         </label>
 
@@ -84,6 +93,7 @@ export function LoginCard() {
           Ainda nao tem acesso? Fale com o suporte para ativar sua empresa.
         </p>
       </form>
-    </section>
+      </CardContent>
+    </Card>
   );
 }

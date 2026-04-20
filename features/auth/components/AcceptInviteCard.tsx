@@ -3,7 +3,11 @@
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
+import { FluxusLogo } from "@/components/brand/FluxusLogo";
 import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import {
   apiRequest,
   formatApiError,
@@ -63,48 +67,55 @@ export function AcceptInviteCard() {
   }
 
   return (
-    <section className="w-full max-w-lg rounded-lg border border-white/10 bg-neutral-950/72 p-6 text-white shadow-[0_24px_90px_rgba(0,0,0,0.38)] backdrop-blur-2xl backdrop-saturate-150">
-      <p className="text-xl font-semibold">FluxusHub</p>
-      <h1 className="mt-8 text-3xl font-semibold">Ative seu acesso</h1>
+    <Card className="w-full max-w-lg border-border/70 bg-card/92 shadow-[0_24px_90px_rgba(15,23,42,0.16)] backdrop-blur-2xl backdrop-saturate-150 dark:border-white/10 dark:bg-neutral-950/72 dark:shadow-[0_24px_90px_rgba(0,0,0,0.38)]">
+      <CardHeader className="p-6 pb-0">
+      <FluxusLogo
+        variant="wordmark"
+        tone="auto"
+        imageClassName="h-8 w-auto"
+      />
+      <CardTitle className="mt-8 text-3xl font-semibold">Ative seu acesso</CardTitle>
+      </CardHeader>
 
+      <CardContent className="p-6">
       {isLoading ? (
-        <p className="mt-6 text-sm text-neutral-300">Validando convite...</p>
+        <p className="text-sm text-muted-foreground">Validando convite...</p>
       ) : invitation ? (
         <>
-          <p className="mt-3 leading-7 text-neutral-300">
+          <p className="leading-7 text-muted-foreground">
             Convite para {invitation.email} em {invitation.workspace_name}.
           </p>
 
           <form className="mt-8 space-y-4" onSubmit={handleSubmit}>
             <label className="block">
-              <span className="text-sm font-medium text-neutral-200">Nome completo</span>
-              <input
+              <Label>Nome completo</Label>
+              <Input
                 value={fullName}
                 onChange={(event) => setFullName(event.target.value)}
                 required
-                className="mt-2 h-11 w-full rounded-lg border border-white/10 bg-white/8 px-3 text-sm text-white outline-none transition focus:border-primary-400 focus:ring-3 focus:ring-primary-500/20"
+                className="mt-2 h-11"
               />
             </label>
 
             <label className="block">
-              <span className="text-sm font-medium text-neutral-200">Usuario</span>
-              <input
+              <Label>Usuario</Label>
+              <Input
                 value={username}
                 onChange={(event) => setUsername(event.target.value)}
                 required
-                className="mt-2 h-11 w-full rounded-lg border border-white/10 bg-white/8 px-3 text-sm text-white outline-none transition focus:border-primary-400 focus:ring-3 focus:ring-primary-500/20"
+                className="mt-2 h-11"
               />
             </label>
 
             <label className="block">
-              <span className="text-sm font-medium text-neutral-200">Senha</span>
-              <input
+              <Label>Senha</Label>
+              <Input
                 type="password"
                 value={password}
                 onChange={(event) => setPassword(event.target.value)}
                 minLength={8}
                 required
-                className="mt-2 h-11 w-full rounded-lg border border-white/10 bg-white/8 px-3 text-sm text-white outline-none transition focus:border-primary-400 focus:ring-3 focus:ring-primary-500/20"
+                className="mt-2 h-11"
               />
             </label>
 
@@ -123,7 +134,7 @@ export function AcceptInviteCard() {
           </form>
         </>
       ) : (
-        <div className="mt-6 space-y-4">
+        <div className="space-y-4">
           <p className="rounded-lg border border-red-400/30 bg-red-500/10 px-3 py-2 text-sm text-red-100">
             {error || "Convite invalido."}
           </p>
@@ -136,6 +147,7 @@ export function AcceptInviteCard() {
           </Button>
         </div>
       )}
-    </section>
+      </CardContent>
+    </Card>
   );
 }

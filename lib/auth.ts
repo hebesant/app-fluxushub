@@ -2,7 +2,13 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { apiRequest, clearTokens, getAccessToken, type UserContext } from "@/lib/api";
+import {
+  apiRequest,
+  clearTokens,
+  getAccessToken,
+  refreshAccessToken,
+  type UserContext,
+} from "@/lib/api";
 
 export function useCurrentUser() {
   const router = useRouter();
@@ -10,20 +16,38 @@ export function useCurrentUser() {
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    const token = getAccessToken();
+    let isMounted = true;
 
-    if (!token) {
-      router.replace("/login");
-      return;
-    }
+    async function loadUser() {
+      let token = getAccessToken();
 
-    apiRequest<UserContext>("/api/auth/me/", { token })
-      .then(setUser)
-      .catch(() => {
+      try {
+        if (!token) {
+          token = await refreshAccessToken();
+        }
+
+        const userContext = await apiRequest<UserContext>("/api/auth/me/", {
+          token,
+        });
+
+        if (isMounted) {
+          setUser(userContext);
+        }
+      } catch {
         clearTokens();
         router.replace("/login");
-      })
-      .finally(() => setIsLoading(false));
+      } finally {
+        if (isMounted) {
+          setIsLoading(false);
+        }
+      }
+    }
+
+    loadUser();
+
+    return () => {
+      isMounted = false;
+    };
   }, [router]);
 
   return { user, isLoading };
