@@ -36,7 +36,7 @@ export function WhatsAppCreateCard({
         </div>
 
         <form
-          className="grid gap-3 lg:min-w-[520px] lg:grid-cols-[1fr_auto]"
+          className="grid gap-3 sm:grid-cols-[1fr_auto] sm:items-end lg:min-w-[520px]"
           onSubmit={onSubmit}
         >
           <label className="block min-w-0">
@@ -52,7 +52,7 @@ export function WhatsAppCreateCard({
 
           <Button
             disabled={isSubmitting}
-            className="mt-7 h-11 rounded-lg bg-primary-500 px-5 text-white hover:bg-primary-400"
+            className="h-11 rounded-lg bg-primary-500 px-5 text-white hover:bg-primary-400"
           >
             <Plus className="size-4" />
             {isSubmitting ? "Criando..." : "Criar instancia"}
