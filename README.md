@@ -55,6 +55,21 @@ O app fica disponivel em:
 http://localhost:3000
 ```
 
+## Deploy Com Docker
+
+O projeto possui `Dockerfile` multi-stage usando o build standalone do Next.js.
+
+```bash
+docker build \
+  --build-arg NEXT_PUBLIC_API_URL=https://api.fluxushub.com.br \
+  -t fluxushub-app .
+```
+
+- Porta exposta pelo container: `3000`.
+- Em Dokploy, use deploy como `Application` com `Dockerfile`.
+- Configure `NEXT_PUBLIC_API_URL=https://api.fluxushub.com.br` como variavel/build arg antes do build.
+- Para teste local contra a API local, use `--build-arg NEXT_PUBLIC_API_URL=http://localhost:8000`.
+
 ## Scripts
 
 ```bash
@@ -125,7 +140,7 @@ O cliente HTTP central fica em `lib/api.ts`.
 - Listas/tags de contatos aceitam resposta paginada pela API ou arrays legados.
 - Detalhes de campanha aceitam destinatarios/eventos paginados pela API ou arrays legados.
 - A suite basica cobre importacao/payload de contatos, utils de campanha, normalizacao de detalhes e regras principais do modal de campanha.
-- O `next.config.ts` possui ajustes de Strict Mode, compressao, cabecalho `X-Powered-By` e imagens locais de `/media/**`.
+- O `next.config.ts` possui build standalone, Strict Mode, compressao, cabecalho `X-Powered-By` e imagens locais de `/media/**`.
 - Em producao, o dominio planejado do app e `https://app.fluxushub.com.br`.
 - O favicon SVG e configurado em `app/layout.tsx` usando logos em `public/`; nao ha `app/favicon.ico` no estado atual.
 - O backend precisa estar rodando para as telas autenticadas carregarem dados reais.

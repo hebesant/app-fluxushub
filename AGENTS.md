@@ -56,6 +56,9 @@ pnpm start
 ```
 
 - Suite basica de testes frontend usa Vitest + Testing Library.
+- Deploy planejado no Dokploy: `Application` com `Dockerfile`, porta `3000`.
+- O Dockerfile usa build standalone do Next.js e aceita `NEXT_PUBLIC_API_URL` como build arg.
+- Em producao, `NEXT_PUBLIC_API_URL` deve apontar para `https://api.fluxushub.com.br` antes do build.
 
 ## Padroes Arquiteturais Identificados
 
@@ -77,7 +80,7 @@ pnpm start
 - Campanhas e contatos usam paginacao de 20 itens por pagina nos hooks.
 - Listas/tags de contatos aceitam resposta paginada ou array legado no front.
 - Detalhes de campanha buscam campanha, preview, destinatarios e eventos em paralelo; destinatarios/eventos aceitam resposta paginada ou array legado.
-- `next.config.ts` define Strict Mode, remove `X-Powered-By`, habilita compressao e permite imagens de `/media/**` vindas da API local.
+- `next.config.ts` define build standalone, Strict Mode, remove `X-Powered-By`, habilita compressao e permite imagens de `/media/**` vindas da API local/producao.
 - Testes frontend usam Vitest em ambiente `jsdom`, com setup em `test/setup.ts`.
 
 ## Convencoes De Codigo Identificadas
@@ -105,6 +108,7 @@ pnpm start
 - `README.md` contem setup local, scripts, rotas principais e notas de integracao com o backend.
 - `.env.example` documenta `NEXT_PUBLIC_API_URL`.
 - `.env.example` aponta para `https://api.fluxushub.com.br`; para desenvolvimento local, usar `.env.local` com `http://localhost:8000`.
+- `Dockerfile` e `.dockerignore` existem para deploy standalone do app; a imagem expoe a porta `3000`.
 - Auth usa access token em memoria e refresh token em cookie `HttpOnly` gerenciado pelo backend; em dev, usar o mesmo host (`localhost`) no front e na API para o cookie `SameSite=Lax`.
 - Favicon e configurado em `app/layout.tsx` via metadata usando os SVGs em `public/`; nao ha `app/favicon.ico` no estado atual.
 - Suite basica de testes cobre CSV/importacao de contatos, payload de contatos, utils de campanha, normalizacao de detalhes de campanha e regras principais do hook do modal de campanha.
