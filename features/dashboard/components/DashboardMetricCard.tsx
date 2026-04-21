@@ -27,21 +27,25 @@ export function DashboardMetricCard({
   tone,
   isLoading,
 }: DashboardMetricCardProps) {
+  const displayBadge = isLoading ? "Carregando" : badge;
+  const displayDetail = isLoading ? "Sincronizando dados..." : detail;
+  const displayTone = isLoading ? "neutral" : tone;
+
   return (
     <article className="rounded-lg border border-border bg-card/92 p-5 backdrop-blur dark:border-white/10 dark:bg-white/8">
       <div className="flex items-center justify-between gap-4">
         <div className="flex size-10 items-center justify-center rounded-lg bg-primary-500 text-white">
           <Icon className="size-4" />
         </div>
-        <Badge variant="outline" className={toneClasses[tone]}>
-          {badge}
+        <Badge variant="outline" className={toneClasses[displayTone]}>
+          {displayBadge}
         </Badge>
       </div>
       <p className="mt-5 text-sm text-muted-foreground">{label}</p>
       <p className="mt-2 text-3xl font-semibold text-foreground dark:text-white">
         {isLoading ? "-" : value}
       </p>
-      <p className="mt-2 text-sm text-muted-foreground">{detail}</p>
+      <p className="mt-2 text-sm text-muted-foreground">{displayDetail}</p>
     </article>
   );
 }
@@ -56,4 +60,3 @@ const toneClasses: Record<DashboardMetricTone, string> = {
   neutral:
     "border-border bg-muted text-muted-foreground dark:border-white/10 dark:bg-white/8",
 };
-

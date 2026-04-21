@@ -12,7 +12,7 @@ export const navigationItems = [
     enabled: true,
   },
   {
-    label: "Campanhas",
+    label: "Disparos",
     href: "/campaigns",
     icon: "campaigns",
     enabled: true,

@@ -38,7 +38,7 @@ export function CampaignAudienceStep({
             Quem deve receber?
           </p>
           <p className="mt-1 text-sm leading-6 text-muted-foreground">
-            Escolha uma tag, uma lista ou toda a base ativa.
+            Escolha um segmento por tag, uma lista ou toda a base ativa.
           </p>
         </div>
       </div>
@@ -55,9 +55,9 @@ export function CampaignAudienceStep({
             <SelectValue placeholder="Selecione o alvo" />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="tag">Contatos por tag</SelectItem>
-            <SelectItem value="list">Contatos por lista</SelectItem>
-            <SelectItem value="all">Todos os contatos</SelectItem>
+            <SelectItem value="tag">Segmento por tag</SelectItem>
+            <SelectItem value="list">Segmento por lista</SelectItem>
+            <SelectItem value="all">Base inteira</SelectItem>
           </SelectContent>
         </Select>
       </label>
@@ -83,7 +83,8 @@ export function CampaignAudienceStep({
           </Select>
           {!availableTags.length ? (
             <p className="mt-2 text-xs text-amber-800 dark:text-amber-100">
-              Crie ou importe contatos com tags antes de criar campanhas por tag.
+              Crie ou importe contatos com tags antes de disparar para esse
+              segmento.
             </p>
           ) : !selectedTagIsValid ? (
             <p className="mt-2 text-xs text-amber-800 dark:text-amber-100">
@@ -114,7 +115,8 @@ export function CampaignAudienceStep({
           </Select>
           {!availableLists.length ? (
             <p className="mt-2 text-xs text-amber-800 dark:text-amber-100">
-              Crie ou importe contatos em listas antes de criar campanhas por lista.
+              Crie ou importe contatos em listas antes de disparar para essa
+              lista.
             </p>
           ) : !selectedListIsValid ? (
             <p className="mt-2 text-xs text-amber-800 dark:text-amber-100">
@@ -126,7 +128,7 @@ export function CampaignAudienceStep({
 
       {form.target_type === "all" ? (
         <div className="rounded-lg border border-amber-300/50 bg-amber-500/10 p-4 text-sm leading-6 text-amber-800 dark:border-amber-300/25 dark:text-amber-100">
-          Esta campanha será enviada para todos os contatos ativos. Confira a
+          Este disparo sera enviado para todos os contatos ativos. Confira a
           mensagem com cuidado antes de disparar.
         </div>
       ) : null}

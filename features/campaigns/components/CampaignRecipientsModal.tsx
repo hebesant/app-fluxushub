@@ -39,7 +39,7 @@ export function CampaignRecipientsModal({
           <div>
             <h3 className="text-lg font-semibold">Detalhes dos destinatarios</h3>
             <p className="mt-2 text-sm leading-6 text-muted-foreground">
-              Confira destinatarios e eventos registrados durante a campanha.
+              Confira destinatarios e eventos registrados durante o disparo.
             </p>
           </div>
         </div>

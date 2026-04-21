@@ -66,9 +66,9 @@ export function CampaignsListCard({
       <div className="flex flex-col gap-4">
         <div className="flex items-center justify-between gap-4">
           <div>
-            <h3 className="text-lg font-semibold text-white">Campanhas</h3>
+            <h3 className="text-lg font-semibold text-white">Disparos</h3>
             <p className="mt-1 text-sm text-neutral-400">
-              {campaigns.length} de {totalCampaigns} campanha
+              {campaigns.length} de {totalCampaigns} disparo
               {totalCampaigns === 1 ? "" : "s"}.
             </p>
           </div>
@@ -80,7 +80,7 @@ export function CampaignsListCard({
             <Input
               value={search}
               onChange={(event) => onSearchChange(event.target.value)}
-              placeholder="Buscar campanha"
+              placeholder="Buscar disparo"
               className="h-11 pl-9"
             />
           </div>
@@ -115,9 +115,9 @@ export function CampaignsListCard({
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="all">Todos alvos</SelectItem>
-              <SelectItem value="tag">Por tag</SelectItem>
-              <SelectItem value="list">Por lista</SelectItem>
-              <SelectItem value="contacts">Todos contatos</SelectItem>
+              <SelectItem value="tag">Segmento por tag</SelectItem>
+              <SelectItem value="list">Segmento por lista</SelectItem>
+              <SelectItem value="contacts">Base inteira</SelectItem>
             </SelectContent>
           </Select>
         </div>
@@ -125,7 +125,7 @@ export function CampaignsListCard({
 
       <div className="mt-5 overflow-hidden rounded-lg border border-border dark:border-white/10">
         {isLoading ? (
-          <p className="p-4 text-sm text-neutral-300">Carregando campanhas...</p>
+          <p className="p-4 text-sm text-neutral-300">Carregando disparos...</p>
         ) : campaigns.length ? (
           <div className="divide-y divide-white/10">
             {campaigns.map((campaign) => (
@@ -188,7 +188,7 @@ export function CampaignsListCard({
           </div>
         ) : (
           <p className="p-4 text-sm text-neutral-300">
-            Nenhuma campanha criada ainda.
+            Nenhum disparo criado ainda.
           </p>
         )}
       </div>
@@ -222,12 +222,12 @@ export function CampaignsListCard({
 
 function campaignTargetLabel(campaign: Campaign) {
   if (campaign.target_type === "all") {
-    return "Todos os contatos";
+    return "Base inteira";
   }
 
   if (campaign.target_type === "list") {
     return `Lista: ${campaign.target_list}`;
   }
 
-  return `Tag: ${campaign.target_tag}`;
+  return `Segmento: ${campaign.target_tag}`;
 }

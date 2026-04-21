@@ -69,7 +69,7 @@ export function CampaignFormFooter({
               disabled={isSubmitting || !canSubmit}
               className="h-10 bg-emerald-500 text-white hover:bg-emerald-400"
             >
-              {isSubmitting ? "Enviando..." : "Enviar campanha"}
+              {isSubmitting ? "Enviando..." : "Enviar disparo"}
             </Button>
           </>
         )}
@@ -77,4 +77,3 @@ export function CampaignFormFooter({
     </div>
   );
 }
-

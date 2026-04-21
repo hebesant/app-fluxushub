@@ -127,15 +127,17 @@ public/              Logos e assets estaticos
 O cliente HTTP central fica em `lib/api.ts`.
 
 - O access token JWT fica apenas em memoria no browser.
+- O contexto do usuario autenticado tambem fica em memoria no `AuthProvider` da area autenticada.
 - O refresh token fica em cookie `HttpOnly` emitido pelo backend.
 - Requisicoes autenticadas usam `Authorization: Bearer <access_token>`.
 - O `fetch` usa `credentials: "include"` para permitir refresh via cookie.
 - Ao recarregar a pagina, o app chama `/api/auth/token/refresh/` para obter um novo access token.
+- Entre navegacoes internas, as telas consomem `useAuth` para reaproveitar o usuario carregado e evitar renderizar fallbacks antes da resposta da API.
 - Logout chama `/api/auth/logout/`, limpa o cookie no backend e remove o access token em memoria.
 
 ## Observacoes
 
-- O tema claro/escuro usa a chave `fluxushub_theme` no `localStorage`.
+- O tema claro/escuro usa a chave compartilhada `fluxushub_theme` no `localStorage`; em producao, o app tambem grava um cookie no dominio pai para sincronizar o tema com `fluxushub.com.br`.
 - Contatos e campanhas usam paginacao de 20 itens por pagina nos hooks atuais.
 - Listas/tags de contatos aceitam resposta paginada pela API ou arrays legados.
 - Detalhes de campanha aceitam destinatarios/eventos paginados pela API ou arrays legados.

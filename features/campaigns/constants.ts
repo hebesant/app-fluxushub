@@ -4,7 +4,6 @@ export const campaignVariableButtons = [
   { label: "Nome", value: "{{name}}" },
   { label: "Primeiro nome", value: "{{first_name}}" },
   { label: "Telefone", value: "{{phone}}" },
-  { label: "E-mail", value: "{{email}}" },
 ];
 
 export const campaignStatusLabels: Record<Campaign["status"], string> = {

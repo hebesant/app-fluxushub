@@ -75,7 +75,7 @@ export function CampaignReviewStep({
           </Select>
           {!instances.length ? (
             <p className="mt-2 text-xs text-amber-800 dark:text-amber-100">
-              Conecte uma instancia de WhatsApp antes de criar campanhas.
+              Conecte uma instancia de WhatsApp antes de criar disparos.
             </p>
           ) : null}
         </label>
@@ -110,7 +110,7 @@ export function CampaignReviewStep({
             })}
           </div>
           <p className="mt-2 text-xs text-muted-foreground">
-            Lento e recomendado para comecar. O modo escolhido nesta campanha
+            Lento e recomendado para comecar. O modo escolhido neste disparo
             sobrescreve o padrao.
           </p>
         </div>

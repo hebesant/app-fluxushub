@@ -10,8 +10,8 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import type { ThemeMode } from "@/components/layout/AppShell";
 import { logout, type UserContext } from "@/lib/api";
+import type { ThemeMode } from "@/lib/theme";
 
 export function AppTopbar({
   user,

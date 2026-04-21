@@ -4,21 +4,29 @@ import { useEffect, useSyncExternalStore } from "react";
 import { FluxusLogo } from "@/components/brand/FluxusLogo";
 import { AppSidebar } from "@/components/layout/AppSidebar";
 import { AppTopbar } from "@/components/layout/AppTopbar";
-import { useCurrentUser } from "@/lib/auth";
-
-export type ThemeMode = "dark" | "light";
-
-const THEME_STORAGE_KEY = "fluxushub_theme";
-const THEME_CHANGE_EVENT = "fluxushub-theme-change";
+import { useAuth } from "@/lib/auth";
+import {
+  THEME_CHANGE_EVENT,
+  THEME_COOKIE_KEY,
+  THEME_STORAGE_KEY,
+  type ThemeMode,
+} from "@/lib/theme";
 
 function getStoredTheme(): ThemeMode {
   if (typeof window === "undefined") {
     return "dark";
   }
 
-  return window.localStorage.getItem(THEME_STORAGE_KEY) === "light"
-    ? "light"
-    : "dark";
+  const cookieMatch = document.cookie.match(
+    new RegExp(`(?:^|; )${THEME_COOKIE_KEY}=([^;]+)`)
+  );
+  const cookieTheme = cookieMatch?.[1];
+
+  if (cookieTheme === "light" || cookieTheme === "dark") {
+    return cookieTheme;
+  }
+
+  return window.localStorage.getItem(THEME_STORAGE_KEY) === "light" ? "light" : "dark";
 }
 
 function subscribeToThemeChanges(onStoreChange: () => void) {
@@ -32,7 +40,7 @@ function subscribeToThemeChanges(onStoreChange: () => void) {
 }
 
 export function AppShell({ children }: Readonly<{ children: React.ReactNode }>) {
-  const { user, isLoading } = useCurrentUser();
+  const { user, isLoading } = useAuth();
   const theme = useSyncExternalStore(
     subscribeToThemeChanges,
     getStoredTheme,
@@ -48,6 +56,14 @@ export function AppShell({ children }: Readonly<{ children: React.ReactNode }>) 
     const nextTheme = theme === "dark" ? "light" : "dark";
 
     window.localStorage.setItem(THEME_STORAGE_KEY, nextTheme);
+    const domain =
+      window.location.hostname === "fluxushub.com.br" ||
+      window.location.hostname.endsWith(".fluxushub.com.br")
+        ? "; domain=.fluxushub.com.br"
+        : "";
+    const secure = window.location.protocol === "https:" ? "; Secure" : "";
+
+    document.cookie = `${THEME_COOKIE_KEY}=${nextTheme}; path=/; max-age=31536000; SameSite=Lax${domain}${secure}`;
     window.dispatchEvent(new Event(THEME_CHANGE_EVENT));
   }
 

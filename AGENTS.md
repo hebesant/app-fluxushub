@@ -3,6 +3,7 @@
 ## Objetivo Do Projeto
 
 - Aplicacao web da Fluxus Hub para operar um painel de campanhas e automacoes.
+- O posicionamento atual do app e focado em disparos via WhatsApp; textos de interface nao devem vender SMS ou e-mail como canais do produto.
 - O app consome uma API Django/DRF via rotas sob `/api/...`.
 - Funcionalidades visiveis no codigo: login, aceite de convite, dashboard, contatos, campanhas, instancias de WhatsApp e configuracoes.
 - A rota `/register` redireciona para `/login`; cadastro aberto nao aparece como fluxo ativo no front.
@@ -75,8 +76,9 @@ pnpm start
   - refresh de access token via cookie `HttpOnly`,
   - formatacao basica de erros.
 - Area autenticada usa `AppShell`, `AppSidebar` e `AppTopbar`.
-- `useCurrentUser` tenta renovar o access token por `/api/auth/token/refresh/`, busca `/api/auth/me/` e redireciona para `/login` se nao houver sessao valida.
-- Tema claro/escuro e salvo em `localStorage` com a chave `fluxushub_theme`.
+- `app/(app)/layout.tsx` envolve a area autenticada com `AuthProvider`; `useAuth` compartilha em memoria o contexto de `/api/auth/me/`, tenta renovar o access token por `/api/auth/token/refresh/` e redireciona para `/login` se nao houver sessao valida.
+- Telas autenticadas devem consumir `useAuth` em vez de buscar `/api/auth/me/` isoladamente, para evitar recarregamentos e piscadas de estado padrao entre navegacoes.
+- Tema claro/escuro usa a chave compartilhada `fluxushub_theme` e, em producao, tambem um cookie no dominio pai `.fluxushub.com.br` para sincronizar website e app.
 - Campanhas e contatos usam paginacao de 20 itens por pagina nos hooks.
 - Listas/tags de contatos aceitam resposta paginada ou array legado no front.
 - Detalhes de campanha buscam campanha, preview, destinatarios e eventos em paralelo; destinatarios/eventos aceitam resposta paginada ou array legado.
@@ -102,6 +104,7 @@ pnpm start
 - Dashboard esta dividido em API, hook, utilitarios e componentes menores.
 - Contatos suportam listagem, busca, filtros, importacao, tags/listas e acoes em massa.
 - Campanhas suportam criacao em etapas, alvos por tag/lista/todos, preview, midia, modo de envio, detalhes, envio, cancelamento e reenvio de falhas.
+- Na interface, o modulo `/campaigns` vem sendo apresentado como area de `Disparos`, mantendo a mesma estrutura tecnica por baixo.
 - Modal de campanha esta dividido entre componente de composicao, hook de estado/acoes e subcomponentes de header/footer/steps.
 - WhatsApp suporta criacao, conexao por QR Code, status, edicao, desconexao e exclusao de instancias.
 - Configuracoes incluem workspace, conta e modo padrao de envio.
@@ -110,6 +113,8 @@ pnpm start
 - `.env.example` aponta para `https://api.fluxushub.com.br`; para desenvolvimento local, usar `.env.local` com `http://localhost:8000`.
 - `Dockerfile` e `.dockerignore` existem para deploy standalone do app; a imagem expoe a porta `3000`.
 - Auth usa access token em memoria e refresh token em cookie `HttpOnly` gerenciado pelo backend; em dev, usar o mesmo host (`localhost`) no front e na API para o cookie `SameSite=Lax`.
+- O contexto do usuario autenticado fica em cache de memoria no `AuthProvider`; nao persistir usuario ou tokens em `localStorage`.
+- Login e aceite de convite devem respeitar o tema bootstrapado no `html`, inclusive antes da autenticacao.
 - Favicon e configurado em `app/layout.tsx` via metadata usando os SVGs em `public/`; nao ha `app/favicon.ico` no estado atual.
 - Suite basica de testes cobre CSV/importacao de contatos, payload de contatos, utils de campanha, normalizacao de detalhes de campanha e regras principais do hook do modal de campanha.
 - Build de producao deve ser validado com `pnpm build`; lint deve ser validado com `pnpm lint`; testes devem ser validados com `pnpm test:run`.

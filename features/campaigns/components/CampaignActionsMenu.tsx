@@ -56,7 +56,7 @@ export function CampaignActionsMenu({
         {canSend ? (
           <DropdownMenuItem onSelect={onSend}>
             <Send className="size-4" />
-            Enviar campanha
+            Enviar disparo
           </DropdownMenuItem>
         ) : null}
 
@@ -79,7 +79,7 @@ export function CampaignActionsMenu({
             <DropdownMenuSeparator />
             <DropdownMenuItem variant="destructive" onSelect={onCancel}>
               <Ban className="size-4" />
-              Cancelar campanha
+              Cancelar disparo
             </DropdownMenuItem>
           </>
         ) : null}

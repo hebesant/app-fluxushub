@@ -12,7 +12,7 @@ export function CampaignFormHeader({ isEditing }: CampaignFormHeaderProps) {
       </div>
       <div>
         <h3 className="text-lg font-semibold text-foreground dark:text-white">
-          {isEditing ? "Editar rascunho" : "Nova campanha"}
+          {isEditing ? "Editar rascunho" : "Novo disparo"}
         </h3>
         <p className="mt-2 text-sm leading-6 text-muted-foreground">
           Monte a mensagem, escolha o publico e revise o envio.
@@ -21,4 +21,3 @@ export function CampaignFormHeader({ isEditing }: CampaignFormHeaderProps) {
     </div>
   );
 }
-

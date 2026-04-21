@@ -5,9 +5,13 @@ import type { DashboardChecklistItem } from "../types";
 
 type DashboardChecklistCardProps = {
   items: DashboardChecklistItem[];
+  isLoading: boolean;
 };
 
-export function DashboardChecklistCard({ items }: DashboardChecklistCardProps) {
+export function DashboardChecklistCard({
+  items,
+  isLoading,
+}: DashboardChecklistCardProps) {
   return (
     <Card className="border-border/70 bg-card/92 p-5 backdrop-blur dark:border-white/10 dark:bg-white/8">
       <div className="flex items-center justify-between gap-4">
@@ -22,7 +26,18 @@ export function DashboardChecklistCard({ items }: DashboardChecklistCardProps) {
       </div>
 
       <div className="mt-5 space-y-3">
-        {items.map((item) => (
+        {isLoading ? (
+          <div className="rounded-lg border border-border bg-muted/45 p-3 dark:border-white/10 dark:bg-neutral-950/40">
+            <p className="text-sm font-medium text-foreground dark:text-white">
+              Carregando checklist...
+            </p>
+            <p className="mt-1 text-sm text-muted-foreground">
+              Buscando conexoes, contatos e campanhas da sua base.
+            </p>
+          </div>
+        ) : null}
+
+        {!isLoading ? items.map((item) => (
           <Link
             key={item.label}
             href={item.href}
@@ -46,9 +61,8 @@ export function DashboardChecklistCard({ items }: DashboardChecklistCardProps) {
               </span>
             </span>
           </Link>
-        ))}
+        )) : null}
       </div>
     </Card>
   );
 }
-

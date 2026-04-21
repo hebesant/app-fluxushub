@@ -1,7 +1,7 @@
 "use client";
 
 import { useMemo } from "react";
-import { useCurrentUser } from "@/lib/auth";
+import { useAuth } from "@/lib/auth";
 import { DashboardChecklistCard } from "./DashboardChecklistCard";
 import { DashboardHero } from "./DashboardHero";
 import { DashboardMetricsGrid } from "./DashboardMetricsGrid";
@@ -17,9 +17,10 @@ import {
 } from "../utils/dashboardSummary";
 
 export function DashboardHome() {
-  const { user } = useCurrentUser();
+  const { user, isLoading: isAuthLoading } = useAuth();
   const { data, isLoading, error } = useDashboardData();
-  const workspaceName = user?.memberships[0]?.workspace_name ?? "sua base";
+  const isPageLoading = isAuthLoading || isLoading;
+  const workspaceName = user?.memberships[0]?.workspace_name ?? "sua operacao";
 
   const connectedInstances = useMemo(
     () => data.instances.filter((instance) => instance.status === "connected"),
@@ -50,16 +51,22 @@ export function DashboardHome() {
       }),
     [connectedInstances.length, data.campaigns.length, data.contactsCount]
   );
+  const heroTitle = isPageLoading
+    ? "Carregando sua operacao..."
+    : dashboardTitle({
+        workspaceName,
+        connectedInstancesCount: connectedInstances.length,
+        contactsCount: data.contactsCount,
+      });
+  const heroAction = isPageLoading
+    ? { href: "/dashboard", label: "Carregando..." }
+    : primaryAction;
 
   return (
     <div className="space-y-6">
       <DashboardHero
-        title={dashboardTitle({
-          workspaceName,
-          connectedInstancesCount: connectedInstances.length,
-          contactsCount: data.contactsCount,
-        })}
-        primaryAction={primaryAction}
+        title={heroTitle}
+        primaryAction={heroAction}
         error={error}
       />
 
@@ -70,7 +77,7 @@ export function DashboardHome() {
         campaigns={data.campaigns}
         failedCampaignsCount={failedCampaigns.length}
         hasSendingCampaign={Boolean(sendingCampaign)}
-        isLoading={isLoading}
+        isLoading={isPageLoading}
       />
 
       {sendingCampaign ? (
@@ -78,10 +85,12 @@ export function DashboardHome() {
       ) : null}
 
       <section className="grid gap-6 xl:grid-cols-[0.85fr_1.15fr]">
-        <DashboardChecklistCard items={checklist} />
-        <RecentCampaignsCard campaigns={data.campaigns} isLoading={isLoading} />
+        <DashboardChecklistCard items={checklist} isLoading={isPageLoading} />
+        <RecentCampaignsCard
+          campaigns={data.campaigns}
+          isLoading={isPageLoading}
+        />
       </section>
     </div>
   );
 }
-

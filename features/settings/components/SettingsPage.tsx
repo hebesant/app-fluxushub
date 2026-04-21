@@ -19,7 +19,7 @@ import {
   getAccessToken,
   type Workspace,
 } from "@/lib/api";
-import { useCurrentUser } from "@/lib/auth";
+import { useAuth } from "@/lib/auth";
 import { concreteSendModes } from "@/features/campaigns/components/campaignFormUtils";
 import {
   fetchWorkspaces,
@@ -62,7 +62,7 @@ const sendModeIconMap = {
 };
 
 export function SettingsPage() {
-  const { user } = useCurrentUser();
+  const { user } = useAuth();
   const [activeTab, setActiveTab] = useState<SettingsTab>("workspace");
   const [selectedSendMode, setSelectedSendMode] = useState<SendMode>("slow");
   const [workspace, setWorkspace] = useState<Workspace | null>(null);

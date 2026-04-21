@@ -86,7 +86,7 @@ export function CampaignContentStep({
       <div className="rounded-lg border border-border bg-muted/45 p-4 dark:border-white/10 dark:bg-white/5">
         <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
           <div>
-            <Label>Midia da campanha</Label>
+            <Label>Midia do disparo</Label>
             <p className="mt-2 text-sm leading-6 text-muted-foreground">
               Opcional. Use imagem ou video MP4 de ate 10 MB.
             </p>
@@ -102,7 +102,7 @@ export function CampaignContentStep({
                 accept="image/png,image/jpeg,image/webp,video/mp4"
                 onChange={onMediaFileChange}
                 className="absolute inset-0 cursor-pointer opacity-0"
-                aria-label="Escolher midia da campanha"
+                aria-label="Escolher midia do disparo"
               />
             </Button>
             {mediaPreviewUrl ? (
@@ -132,7 +132,7 @@ export function CampaignContentStep({
                 // eslint-disable-next-line @next/next/no-img-element -- Preview uses local blob/backend URLs selected by the user.
                 <img
                   src={mediaPreviewUrl}
-                  alt="Preview da imagem da campanha"
+                  alt="Preview da imagem do disparo"
                   className="aspect-video h-full w-full object-cover"
                 />
               )}
@@ -159,7 +159,7 @@ export function CampaignContentStep({
           Variaveis disponiveis
         </div>
         <p className="mt-2 text-sm leading-6 text-muted-foreground">
-          Use {"{{name}}"}, {"{{first_name}}"}, {"{{phone}}"} e {"{{email}}"}.
+          Use {"{{name}}"}, {"{{first_name}}"} e {"{{phone}}"}.
         </p>
       </div>
     </div>

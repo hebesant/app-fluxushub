@@ -13,14 +13,14 @@ export function CampaignsHeader({ onRefresh, onCreate }: CampaignsHeaderProps) {
       <div className="flex flex-col gap-5 lg:flex-row lg:items-center lg:justify-between">
         <div>
           <p className="text-sm font-semibold uppercase text-primary-300">
-            Campanhas
+            Disparos
           </p>
           <h2 className="mt-2 text-3xl font-semibold text-white">
-            Disparos por tag
+            Disparos via WhatsApp
           </h2>
           <p className="mt-3 max-w-2xl leading-7 text-neutral-300">
-            Crie campanhas, escolha uma tag da base e personalize a mensagem com
-            dados do contato.
+            Monte o disparo, escolha o publico por tag, lista ou base inteira e
+            personalize a mensagem com dados do contato.
           </p>
         </div>
 
@@ -34,7 +34,7 @@ export function CampaignsHeader({ onRefresh, onCreate }: CampaignsHeaderProps) {
             className="bg-primary-500 text-white hover:bg-primary-400"
           >
             <Plus className="size-4" />
-            Nova campanha
+            Novo disparo
           </Button>
         </div>
       </div>

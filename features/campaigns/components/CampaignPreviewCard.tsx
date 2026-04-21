@@ -53,8 +53,8 @@ export function CampaignPreviewCard({
             </p>
             <p className="mt-1 text-xs text-neutral-500">
               {selectedCampaign.target_type === "all"
-                ? "Todos os contatos"
-                : `Tag: ${selectedCampaign.target_tag}`}
+                ? "Base inteira"
+                : `Segmento: ${selectedCampaign.target_tag}`}
             </p>
           </div>
 
@@ -119,7 +119,7 @@ export function CampaignPreviewCard({
                 </div>
               ) : (
                 <p className="rounded-lg border border-amber-300/50 bg-amber-500/10 p-3 text-sm text-amber-800 dark:border-amber-300/20 dark:text-amber-100">
-                  Nenhum contato ativo encontrado para essa tag.
+                  Nenhum contato ativo encontrado para esse segmento.
                 </p>
               )}
 
@@ -177,10 +177,10 @@ export function CampaignPreviewCard({
               >
                 <Send className="size-4" />
                 {isPreparing
-                  ? "Preparando campanha..."
+                  ? "Preparando disparo..."
                   : isSending
                     ? "Enviando..."
-                    : "Enviar campanha"}
+                    : "Enviar disparo"}
               </Button>
             </div>
           ) : (
@@ -197,7 +197,7 @@ export function CampaignPreviewCard({
       ) : (
         <Alert className="mt-5">
           <AlertDescription>
-            Selecione uma campanha ou crie a primeira para ver o preview.
+            Selecione um disparo ou crie o primeiro para ver o preview.
           </AlertDescription>
         </Alert>
       )}
