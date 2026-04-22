@@ -101,6 +101,7 @@ pnpm start
 
 - Rotas principais existem e apontam para suas features.
 - Login e aceite de convite estao implementados no front.
+- O aceite de convite deve refletir a politica atual de senha do backend: minimo de 10 caracteres, com ao menos uma letra, um numero e um caractere especial.
 - Dashboard mostra metricas e listas operacionais a partir da API.
 - Dashboard esta dividido em API, hook, utilitarios e componentes menores.
 - Contatos suportam listagem, busca, filtros, importacao, tags/listas e acoes em massa.

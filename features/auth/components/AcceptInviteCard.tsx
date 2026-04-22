@@ -132,10 +132,14 @@ export function AcceptInviteCard() {
                 type="password"
                 value={password}
                 onChange={(event) => setPassword(event.target.value)}
-                minLength={8}
+                minLength={10}
                 required
                 className="mt-2 h-11"
               />
+              <p className="mt-2 text-xs leading-5 text-muted-foreground">
+                Use pelo menos 10 caracteres, com ao menos uma letra, um numero
+                e um caractere especial.
+              </p>
             </label>
 
             {error ? (
