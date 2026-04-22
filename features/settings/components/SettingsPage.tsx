@@ -41,6 +41,7 @@ import {
   type Workspace,
 } from "@/lib/api";
 import { useAuth } from "@/lib/auth";
+import { readSessionCache, writeSessionCache } from "@/lib/session-cache";
 import { concreteSendModes } from "@/features/campaigns/components/campaignFormUtils";
 import {
   createInvitation,
@@ -56,6 +57,16 @@ import {
 type SettingsTab = "workspace" | "team" | "sending" | "account";
 type SendMode = "slow" | "normal" | "fast";
 type MvpAssignableRole = Extract<Membership["role"], "member" | "owner">;
+type SettingsWorkspaceCache = {
+  workspace: Workspace | null;
+};
+type SettingsTeamCache = {
+  memberships: Membership[];
+  invitations: Invitation[];
+};
+
+const settingsWorkspaceCacheKey = "settings:workspace";
+const settingsTeamCacheKey = "settings:team";
 
 const tabs: Array<{
   id: SettingsTab;
@@ -97,13 +108,23 @@ const sendModeIconMap = {
 
 export function SettingsPage() {
   const { user } = useAuth();
+  const cachedWorkspaceData = readSessionCache<SettingsWorkspaceCache>(
+    settingsWorkspaceCacheKey
+  );
+  const cachedTeamData = readSessionCache<SettingsTeamCache>(settingsTeamCacheKey);
   const [activeTab, setActiveTab] = useState<SettingsTab>("workspace");
   const [selectedSendMode, setSelectedSendMode] = useState<SendMode>("slow");
-  const [workspace, setWorkspace] = useState<Workspace | null>(null);
-  const [memberships, setMemberships] = useState<Membership[]>([]);
-  const [invitations, setInvitations] = useState<Invitation[]>([]);
-  const [isLoadingWorkspace, setIsLoadingWorkspace] = useState(true);
-  const [isLoadingTeam, setIsLoadingTeam] = useState(true);
+  const [workspace, setWorkspace] = useState<Workspace | null>(
+    cachedWorkspaceData?.value.workspace ?? null
+  );
+  const [memberships, setMemberships] = useState<Membership[]>(
+    cachedTeamData?.value.memberships ?? []
+  );
+  const [invitations, setInvitations] = useState<Invitation[]>(
+    cachedTeamData?.value.invitations ?? []
+  );
+  const [isLoadingWorkspace, setIsLoadingWorkspace] = useState(!cachedWorkspaceData);
+  const [isLoadingTeam, setIsLoadingTeam] = useState(!cachedTeamData);
   const [isSavingSendMode, setIsSavingSendMode] = useState(false);
   const [inviteEmail, setInviteEmail] = useState("");
   const [inviteRole, setInviteRole] = useState<MvpAssignableRole>("member");
@@ -163,10 +184,17 @@ export function SettingsPage() {
 
   useEffect(() => {
     const token = getAccessToken();
+    const cachedEntry = readSessionCache<SettingsWorkspaceCache>(
+      settingsWorkspaceCacheKey
+    );
 
     if (!token) {
       setIsLoadingWorkspace(false);
       return;
+    }
+
+    if (!cachedEntry) {
+      setIsLoadingWorkspace(true);
     }
 
     fetchWorkspaces(token)
@@ -174,6 +202,9 @@ export function SettingsPage() {
         const activeWorkspace = workspaces[0] ?? null;
         setWorkspace(activeWorkspace);
         setSelectedSendMode(activeWorkspace?.default_send_mode ?? "slow");
+        writeSessionCache(settingsWorkspaceCacheKey, {
+          workspace: activeWorkspace,
+        });
       })
       .catch((requestError) => {
         sonnerToast.error(formatApiError(requestError));
@@ -183,16 +214,25 @@ export function SettingsPage() {
 
   useEffect(() => {
     const token = getAccessToken();
+    const cachedEntry = readSessionCache<SettingsTeamCache>(settingsTeamCacheKey);
 
     if (!token) {
       setIsLoadingTeam(false);
       return;
     }
 
+    if (!cachedEntry) {
+      setIsLoadingTeam(true);
+    }
+
     Promise.all([fetchMemberships(token), fetchInvitations(token)])
       .then(([loadedMemberships, loadedInvitations]) => {
         setMemberships(loadedMemberships);
         setInvitations(loadedInvitations);
+        writeSessionCache(settingsTeamCacheKey, {
+          memberships: loadedMemberships,
+          invitations: loadedInvitations,
+        });
       })
       .catch((requestError) => {
         sonnerToast.error(formatApiError(requestError));
@@ -216,6 +256,9 @@ export function SettingsPage() {
       });
       setWorkspace(updatedWorkspace);
       setSelectedSendMode(updatedWorkspace.default_send_mode);
+      writeSessionCache(settingsWorkspaceCacheKey, {
+        workspace: updatedWorkspace,
+      });
       sonnerToast.success("Configuracao salva.");
     } catch (requestError) {
       sonnerToast.error(formatApiError(requestError));
@@ -245,6 +288,10 @@ export function SettingsPage() {
       const newestInvite =
         refreshedInvitations.find((invitation) => invitation.accept_url) ?? null;
       setInvitations(refreshedInvitations);
+      writeSessionCache(settingsTeamCacheKey, {
+        memberships,
+        invitations: refreshedInvitations,
+      });
       setLatestInviteLink(newestInvite?.accept_url ?? "");
       setInviteEmail("");
       setInviteRole("member");
@@ -272,6 +319,10 @@ export function SettingsPage() {
       await updateMembershipRole(token, membershipId, role);
       const refreshedMemberships = await fetchMemberships(token);
       setMemberships(refreshedMemberships);
+      writeSessionCache(settingsTeamCacheKey, {
+        memberships: refreshedMemberships,
+        invitations,
+      });
       sonnerToast.success("Permissao atualizada.");
     } catch (requestError) {
       sonnerToast.error(formatApiError(requestError));
@@ -292,6 +343,10 @@ export function SettingsPage() {
       await removeMembership(token, membershipId);
       const refreshedMemberships = await fetchMemberships(token);
       setMemberships(refreshedMemberships);
+      writeSessionCache(settingsTeamCacheKey, {
+        memberships: refreshedMemberships,
+        invitations,
+      });
       sonnerToast.success("Membro removido do workspace.");
     } catch (requestError) {
       sonnerToast.error(formatApiError(requestError));
@@ -312,6 +367,10 @@ export function SettingsPage() {
       await deleteInvitation(token, invitationId);
       const refreshedInvitations = await fetchInvitations(token);
       setInvitations(refreshedInvitations);
+      writeSessionCache(settingsTeamCacheKey, {
+        memberships,
+        invitations: refreshedInvitations,
+      });
       sonnerToast.success("Convite removido.");
     } catch (requestError) {
       sonnerToast.error(formatApiError(requestError));

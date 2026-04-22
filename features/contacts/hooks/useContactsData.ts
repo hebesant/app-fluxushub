@@ -5,37 +5,90 @@ import {
   type Contact,
   type Workspace,
 } from "@/lib/api";
+import { readSessionCache, writeSessionCache } from "@/lib/session-cache";
 import { fetchContactsScreenData } from "../api/contactsApi";
 
 type UseContactsDataParams = {
   showToast: (type: "success" | "error", message: string) => void;
 };
 
+type ContactsScreenCache = {
+  contacts: Contact[];
+  totalContacts: number;
+  availableTags: string[];
+  availableLists: string[];
+  workspaces: Workspace[];
+};
+
 const pageSize = 20;
 
 export function useContactsData({ showToast }: UseContactsDataParams) {
-  const [contacts, setContacts] = useState<Contact[]>([]);
-  const [totalContacts, setTotalContacts] = useState(0);
-  const [availableTags, setAvailableTags] = useState<string[]>([]);
-  const [availableLists, setAvailableLists] = useState<string[]>([]);
-  const [workspaces, setWorkspaces] = useState<Workspace[]>([]);
   const [search, setSearch] = useState("");
   const [selectedTags, setSelectedTags] = useState<string[]>([]);
   const [selectedList, setSelectedList] = useState("");
   const [page, setPage] = useState(1);
-  const [isLoading, setIsLoading] = useState(true);
+  const cacheKey = useMemo(
+    () =>
+      [
+        "contacts:screen",
+        page,
+        search.trim(),
+        selectedList,
+        [...selectedTags].sort().join(","),
+      ].join(":"),
+    [page, search, selectedList, selectedTags]
+  );
+  const cachedData = useMemo(
+    () => readSessionCache<ContactsScreenCache>(cacheKey),
+    [cacheKey]
+  );
+  const [contacts, setContacts] = useState<Contact[]>(
+    cachedData?.value.contacts ?? []
+  );
+  const [totalContacts, setTotalContacts] = useState(
+    cachedData?.value.totalContacts ?? 0
+  );
+  const [availableTags, setAvailableTags] = useState<string[]>(
+    cachedData?.value.availableTags ?? []
+  );
+  const [availableLists, setAvailableLists] = useState<string[]>(
+    cachedData?.value.availableLists ?? []
+  );
+  const [workspaces, setWorkspaces] = useState<Workspace[]>(
+    cachedData?.value.workspaces ?? []
+  );
+  const [isLoading, setIsLoading] = useState(!cachedData);
 
   const activeWorkspace = useMemo(() => workspaces[0], [workspaces]);
   const totalPages = Math.max(1, Math.ceil(totalContacts / pageSize));
 
+  useEffect(() => {
+    const nextCachedData = readSessionCache<ContactsScreenCache>(cacheKey);
+
+    if (!nextCachedData) {
+      setIsLoading(true);
+      return;
+    }
+
+    setContacts(nextCachedData.value.contacts);
+    setTotalContacts(nextCachedData.value.totalContacts);
+    setAvailableLists(nextCachedData.value.availableLists);
+    setAvailableTags(nextCachedData.value.availableTags);
+    setWorkspaces(nextCachedData.value.workspaces);
+    setIsLoading(false);
+  }, [cacheKey]);
+
   const loadData = useCallback(async () => {
     const token = getAccessToken();
+    const cachedEntry = readSessionCache<ContactsScreenCache>(cacheKey);
 
     if (!token) {
       return;
     }
 
-    setIsLoading(true);
+    if (!cachedEntry) {
+      setIsLoading(true);
+    }
 
     try {
       const data = await fetchContactsScreenData(token, {
@@ -51,12 +104,19 @@ export function useContactsData({ showToast }: UseContactsDataParams) {
       setTotalContacts(data.contacts.count);
       setAvailableLists(data.listNames);
       setAvailableTags(data.tagNames);
+      writeSessionCache(cacheKey, {
+        workspaces: data.workspaces,
+        contacts: data.contacts.results,
+        totalContacts: data.contacts.count,
+        availableLists: data.listNames,
+        availableTags: data.tagNames,
+      });
     } catch (requestError) {
       showToast("error", formatApiError(requestError));
     } finally {
       setIsLoading(false);
     }
-  }, [page, search, selectedList, selectedTags, showToast]);
+  }, [cacheKey, page, search, selectedList, selectedTags, showToast]);
 
   useEffect(() => {
     loadData();

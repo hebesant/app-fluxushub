@@ -75,6 +75,7 @@ pnpm start
   - access token JWT em memoria,
   - refresh de access token via cookie `HttpOnly`,
   - formatacao basica de erros.
+- O app agora usa tambem um cache de sessao em memoria para dados de tela, reaproveitando resultados recentes entre navegacoes internas e revalidando ao fundo para reduzir o "pisca" de carregamento ao trocar de aba.
 - Area autenticada usa `AppShell`, `AppSidebar` e `AppTopbar`.
 - `app/(app)/layout.tsx` envolve a area autenticada com `AuthProvider`; `useAuth` compartilha em memoria o contexto de `/api/auth/me/`, tenta renovar o access token por `/api/auth/token/refresh/` e redireciona para `/login` se nao houver sessao valida.
 - Telas autenticadas devem consumir `useAuth` em vez de buscar `/api/auth/me/` isoladamente, para evitar recarregamentos e piscadas de estado padrao entre navegacoes.
@@ -120,6 +121,7 @@ pnpm start
 - `Dockerfile` e `.dockerignore` existem para deploy standalone do app; a imagem expoe a porta `3000`.
 - Auth usa access token em memoria e refresh token em cookie `HttpOnly` gerenciado pelo backend; em dev, usar o mesmo host (`localhost`) no front e na API para o cookie `SameSite=Lax`.
 - O contexto do usuario autenticado fica em cache de memoria no `AuthProvider`; nao persistir usuario ou tokens em `localStorage`.
+- Dashboard, contatos, disparos, WhatsApp e configuracoes devem preferir stale-while-revalidate com cache em memoria de sessao; estados de loading plenos devem aparecer principalmente no primeiro carregamento real, nao em toda troca de rota interna.
 - Login e aceite de convite devem respeitar o tema bootstrapado no `html`, inclusive antes da autenticacao.
 - Favicon e configurado em `app/layout.tsx` via metadata usando os SVGs em `public/`; nao ha `app/favicon.ico` no estado atual.
 - Suite basica de testes cobre CSV/importacao de contatos, payload de contatos, utils de campanha, normalizacao de detalhes de campanha e regras principais do hook do modal de campanha.
