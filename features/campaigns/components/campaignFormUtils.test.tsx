@@ -5,6 +5,7 @@ import {
   mediaLabel,
   parseCampaignTargetTags,
   renderLocalPreview,
+  scheduleLabel,
   sendModeLabel,
 } from "./campaignFormUtils";
 
@@ -17,6 +18,8 @@ const baseForm: CampaignForm = {
   target_list: "",
   message_template: "Ola {{first_name}}",
   send_mode: "slow",
+  schedule_type: "now",
+  scheduled_for_local: "",
   media_type: "none",
   media_file: null,
   media_file_url: null,
@@ -72,5 +75,12 @@ describe("campaign form utils", () => {
     expect(sendModeLabel("slow")).toBe("Lento 12s");
     expect(sendModeLabel("normal")).toBe("Normal 8s");
     expect(sendModeLabel("fast")).toBe("Rapido 5s");
+    expect(scheduleLabel(baseForm, "America/Sao_Paulo")).toBe("Enviar agora");
+    expect(
+      scheduleLabel(
+        { ...baseForm, schedule_type: "scheduled", scheduled_for_local: "2030-04-22T15:30" },
+        "America/Sao_Paulo"
+      )
+    ).toBe("2030-04-22 15:30 (America/Sao_Paulo)");
   });
 });

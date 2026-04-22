@@ -105,12 +105,12 @@ pnpm start
 - Dashboard mostra metricas e listas operacionais a partir da API.
 - Dashboard esta dividido em API, hook, utilitarios e componentes menores.
 - Contatos suportam listagem, busca, filtros, importacao, tags/listas e acoes em massa.
-- Campanhas suportam criacao em etapas, alvos por tag/lista/todos, preview, midia, modo de envio, detalhes, envio, cancelamento e reenvio de falhas.
+- Campanhas suportam criacao em etapas, alvos por tag/lista/todos, preview, midia, modo de envio, agendamento unico, detalhes, envio, cancelamento e reenvio de falhas.
 - No fluxo por tag, a interface deve permitir selecionar multiplas tags; o backend continua responsavel por deduplicar contatos que caiam em mais de uma tag selecionada.
 - Na interface, o modulo `/campaigns` vem sendo apresentado como area de `Disparos`, mantendo a mesma estrutura tecnica por baixo.
 - Modal de campanha esta dividido entre componente de composicao, hook de estado/acoes e subcomponentes de header/footer/steps.
 - WhatsApp suporta criacao, conexao por QR Code, status, edicao, desconexao e exclusao de instancias.
-- Configuracoes incluem workspace, conta e modo padrao de envio.
+- Configuracoes incluem workspace, timezone do workspace, conta e modo padrao de envio.
 - Configuracoes agora incluem uma aba de equipe para owners gerenciarem membros, papeis e convites pendentes do workspace atual.
 - A tela de configuracoes nao deve concentrar toda a logica de dados e UI em um arquivo unico; manter `useSettingsData` como ponto de orquestracao e seções por aba em componentes separados.
 - A aba de equipe foi reposicionada para convites por link compartilhavel, nao envio de e-mail transacional; owner escolhe papel e expiracao por presets e compartilha manualmente o link.
@@ -147,6 +147,7 @@ pnpm start
 - Prioridade 3: integrar billing com Stripe no app, incluindo leitura de assinatura, trial, plano ativo e cobranca por numero adicional.
 - Prioridade 4: preparar a UX de trial para pequenos estabelecimentos reais, com onboarding simples e limites claros de uso.
 - Fase 1 do app deve focar a aba de configuracoes do owner: membros, convites, papeis, perfil do workspace e visibilidade de limites/plano.
+- O agendamento deve continuar simples neste ciclo: envio unico, sem recorrencia, sem cron livre e sem timezone por usuario; o fuso vem do workspace.
 - A UX de billing no app deve nascer orientada ao workspace: owner responsavel, assinatura unica por workspace e numeros adicionais como expansao da mesma assinatura.
 - Expandir testes de componentes para auth, WhatsApp e configuracoes quando esses fluxos estabilizarem.
 - Adicionar smoke tests E2E com Playwright antes de automatizar deploys.

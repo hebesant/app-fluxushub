@@ -7,6 +7,8 @@ export type CampaignForm = {
   target_list: string;
   message_template: string;
   send_mode: "slow" | "normal" | "fast";
+  schedule_type: "now" | "scheduled";
+  scheduled_for_local: string;
   media_type: "none" | "image" | "video";
   media_file: File | null;
   media_file_url: string | null;
@@ -15,6 +17,7 @@ export type CampaignForm = {
 export type CampaignStatusFilter =
   | "all"
   | "draft"
+  | "scheduled"
   | "ready"
   | "sending"
   | "sent"
@@ -32,6 +35,8 @@ export const initialCampaignForm: CampaignForm = {
   target_list: "",
   message_template: "Ola {{first_name}}, tudo bem?",
   send_mode: "slow",
+  schedule_type: "now",
+  scheduled_for_local: "",
   media_type: "none",
   media_file: null,
   media_file_url: null,

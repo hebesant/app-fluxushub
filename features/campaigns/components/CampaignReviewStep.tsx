@@ -1,4 +1,5 @@
 import { Rocket, Send, Snail, Thermometer } from "lucide-react";
+import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import {
   Select,
@@ -16,6 +17,7 @@ import {
   concreteSendModes,
   mediaLabel,
   renderLocalPreview,
+  scheduleLabel,
   sendModeLabel,
 } from "./campaignFormUtils";
 import { CampaignWhatsAppPreview } from "./CampaignWhatsAppPreview";
@@ -25,6 +27,7 @@ type CampaignReviewStepProps = {
   instanceOptions: WhatsAppInstance[];
   instances: WhatsAppInstance[];
   mediaPreviewUrl: string | null;
+  workspaceTimezone: string;
   onChange: CampaignFormChangeHandler;
 };
 
@@ -33,6 +36,7 @@ export function CampaignReviewStep({
   instanceOptions,
   instances,
   mediaPreviewUrl,
+  workspaceTimezone,
   onChange,
 }: CampaignReviewStepProps) {
   const sendModeIconMap = {
@@ -121,6 +125,73 @@ export function CampaignReviewStep({
           <SummaryItem label="Envio">
             {sendModeLabel(form.send_mode)}
           </SummaryItem>
+          <SummaryItem label="Horario">
+            {scheduleLabel(form, workspaceTimezone)}
+          </SummaryItem>
+        </div>
+
+        <div className="rounded-lg border border-border bg-muted/45 p-4 dark:border-white/10 dark:bg-neutral-950/40">
+          <Label>Quando enviar</Label>
+          <div className="mt-2 grid gap-2 sm:grid-cols-2">
+            <button
+              type="button"
+              onClick={() => {
+                onChange("schedule_type", "now");
+                onChange("scheduled_for_local", "");
+              }}
+              className={`rounded-lg border p-3 text-left transition ${
+                form.schedule_type === "now"
+                  ? "border-primary-500 bg-primary-500/10"
+                  : "border-border bg-background hover:bg-muted/50 dark:border-white/10 dark:bg-white/5 dark:hover:bg-white/8"
+              }`}
+            >
+              <p className="font-medium text-foreground dark:text-white">
+                Enviar agora
+              </p>
+              <p className="mt-1 text-xs text-muted-foreground">
+                Salva o rascunho e coloca na fila imediatamente.
+              </p>
+            </button>
+            <button
+              type="button"
+              onClick={() => onChange("schedule_type", "scheduled")}
+              className={`rounded-lg border p-3 text-left transition ${
+                form.schedule_type === "scheduled"
+                  ? "border-primary-500 bg-primary-500/10"
+                  : "border-border bg-background hover:bg-muted/50 dark:border-white/10 dark:bg-white/5 dark:hover:bg-white/8"
+              }`}
+            >
+              <p className="font-medium text-foreground dark:text-white">
+                Agendar disparo
+              </p>
+              <p className="mt-1 text-xs text-muted-foreground">
+                Usa a hora local do workspace para disparar depois.
+              </p>
+            </button>
+          </div>
+
+          {form.schedule_type === "scheduled" ? (
+            <div className="mt-4 space-y-2">
+              <Label htmlFor="scheduled_for_local">
+                Data e hora do workspace
+              </Label>
+              <Input
+                id="scheduled_for_local"
+                type="datetime-local"
+                value={form.scheduled_for_local}
+                onChange={(event) =>
+                  onChange("scheduled_for_local", event.target.value)
+                }
+              />
+              <p className="text-xs leading-5 text-muted-foreground">
+                O backend interpreta esse horario usando a timezone{" "}
+                <span className="font-medium text-foreground dark:text-white">
+                  {workspaceTimezone}
+                </span>
+                .
+              </p>
+            </div>
+          ) : null}
         </div>
       </div>
 

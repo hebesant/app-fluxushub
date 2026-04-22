@@ -67,8 +67,8 @@ export function useCampaignFormActions({
   }
 
   function openEditCampaign(campaign: Campaign) {
-    if (campaign.status !== "draft") {
-      showToast("error", "Apenas rascunhos podem ser editados.");
+    if (!["draft", "scheduled"].includes(campaign.status)) {
+      showToast("error", "Apenas rascunhos e agendados podem ser editados.");
       return;
     }
 
@@ -84,6 +84,8 @@ export function useCampaignFormActions({
       target_list: campaign.target_list,
       message_template: campaign.message_template,
       send_mode: campaign.send_mode,
+      schedule_type: campaign.status === "scheduled" ? "scheduled" : "now",
+      scheduled_for_local: campaign.scheduled_at_local ?? "",
       media_type: campaign.media_type,
       media_file: null,
       media_file_url: campaign.media_file_url,
@@ -141,7 +143,13 @@ export function useCampaignFormActions({
       if (savedCampaign) {
         showToast(
           "success",
-          editingCampaign ? "Rascunho atualizado." : "Campanha criada."
+          savedCampaign.status === "scheduled"
+            ? editingCampaign
+              ? "Agendamento atualizado."
+              : "Disparo agendado."
+            : editingCampaign
+              ? "Rascunho atualizado."
+              : "Campanha criada."
         );
       }
     } catch (requestError) {
@@ -158,7 +166,11 @@ export function useCampaignFormActions({
       const savedCampaign = await saveCurrentCampaign();
 
       if (savedCampaign) {
-        await sendCampaignAfterSave(savedCampaign);
+        if (form.schedule_type === "scheduled") {
+          showToast("success", "Disparo agendado com sucesso.");
+        } else {
+          await sendCampaignAfterSave(savedCampaign);
+        }
       }
     } catch (requestError) {
       showToast("error", formatApiError(requestError));

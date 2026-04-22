@@ -11,6 +11,7 @@ import { useCampaignFormModal } from "../hooks/useCampaignFormModal";
 
 type CampaignFormModalProps = {
   form: CampaignForm;
+  workspaceTimezone: string;
   connectedInstances: WhatsAppInstance[];
   instances: WhatsAppInstance[];
   availableTags: string[];
@@ -30,6 +31,7 @@ type CampaignFormModalProps = {
 
 export function CampaignFormModal({
   form,
+  workspaceTimezone,
   connectedInstances,
   instances,
   availableTags,
@@ -97,6 +99,7 @@ export function CampaignFormModal({
             instanceOptions={instanceOptions}
             instances={instances}
             mediaPreviewUrl={modalState.mediaPreviewUrl}
+            workspaceTimezone={workspaceTimezone}
             onChange={onChange}
           />
         ) : null}
@@ -107,6 +110,12 @@ export function CampaignFormModal({
           isSubmitting={isSubmitting}
           canContinueCurrentStep={modalState.canContinueCurrentStep}
           canSubmit={modalState.canSubmit}
+          primaryActionLabel={
+            form.schedule_type === "scheduled" ? "Agendar disparo" : "Enviar disparo"
+          }
+          primaryActionLoadingLabel={
+            form.schedule_type === "scheduled" ? "Agendando..." : "Enviando..."
+          }
           onCancel={onCancel}
           onGoBack={modalState.goBack}
           onGoNext={modalState.goNext}

@@ -47,6 +47,7 @@ export function useSettingsData() {
   );
   const cachedTeamData = readSessionCache<SettingsTeamCache>(settingsTeamCacheKey);
   const [selectedSendMode, setSelectedSendMode] = useState<SendMode>("slow");
+  const [selectedTimezone, setSelectedTimezone] = useState("America/Sao_Paulo");
   const [workspace, setWorkspace] = useState<Workspace | null>(
     cachedWorkspaceData?.value.workspace ?? null
   );
@@ -59,6 +60,7 @@ export function useSettingsData() {
   const [isLoadingWorkspace, setIsLoadingWorkspace] = useState(!cachedWorkspaceData);
   const [isLoadingTeam, setIsLoadingTeam] = useState(!cachedTeamData);
   const [isSavingSendMode, setIsSavingSendMode] = useState(false);
+  const [isSavingTimezone, setIsSavingTimezone] = useState(false);
   const [inviteEmail, setInviteEmail] = useState("");
   const [inviteRole, setInviteRole] = useState<MvpAssignableRole>("member");
   const [inviteExpiry, setInviteExpiry] = useState<30 | 120 | 1440 | 10080>(1440);
@@ -68,6 +70,10 @@ export function useSettingsData() {
 
   const workspaceName =
     workspace?.name ?? user?.memberships[0]?.workspace_name ?? "Workspace";
+  const browserTimezone =
+    typeof Intl !== "undefined"
+      ? Intl.DateTimeFormat().resolvedOptions().timeZone
+      : "America/Sao_Paulo";
   const name = user?.full_name || user?.email || "Usuario";
   const selectedMode = concreteSendModes.find(
     (mode) => mode.id === selectedSendMode
@@ -123,6 +129,9 @@ export function useSettingsData() {
         const activeWorkspace = workspaces[0] ?? null;
         setWorkspace(activeWorkspace);
         setSelectedSendMode(activeWorkspace?.default_send_mode ?? "slow");
+        setSelectedTimezone(
+          activeWorkspace?.timezone ?? browserTimezone ?? "America/Sao_Paulo"
+        );
         writeSessionCache(settingsWorkspaceCacheKey, {
           workspace: activeWorkspace,
         });
@@ -131,7 +140,7 @@ export function useSettingsData() {
         sonnerToast.error(formatApiError(requestError));
       })
       .finally(() => setIsLoadingWorkspace(false));
-  }, []);
+  }, [browserTimezone]);
 
   useEffect(() => {
     const token = getAccessToken();
@@ -171,6 +180,7 @@ export function useSettingsData() {
     try {
       const updatedWorkspace = await updateWorkspaceSettings(token, workspace.id, {
         default_send_mode: selectedSendMode,
+        timezone: workspace.timezone,
       });
       setWorkspace(updatedWorkspace);
       setSelectedSendMode(updatedWorkspace.default_send_mode);
@@ -182,6 +192,34 @@ export function useSettingsData() {
       sonnerToast.error(formatApiError(requestError));
     } finally {
       setIsSavingSendMode(false);
+    }
+  }
+
+  async function saveTimezone() {
+    const token = getAccessToken();
+
+    if (!token || !workspace) {
+      sonnerToast.error("Workspace nao encontrado para este usuario.");
+      return;
+    }
+
+    setIsSavingTimezone(true);
+
+    try {
+      const updatedWorkspace = await updateWorkspaceSettings(token, workspace.id, {
+        default_send_mode: workspace.default_send_mode,
+        timezone: selectedTimezone,
+      });
+      setWorkspace(updatedWorkspace);
+      setSelectedTimezone(updatedWorkspace.timezone);
+      writeSessionCache(settingsWorkspaceCacheKey, {
+        workspace: updatedWorkspace,
+      });
+      sonnerToast.success("Timezone do workspace salva.");
+    } catch (requestError) {
+      sonnerToast.error(formatApiError(requestError));
+    } finally {
+      setIsSavingTimezone(false);
     }
   }
 
@@ -311,6 +349,9 @@ export function useSettingsData() {
     name,
     selectedSendMode,
     setSelectedSendMode,
+    selectedTimezone,
+    setSelectedTimezone,
+    browserTimezone,
     selectedMode,
     workspaceMemberships,
     workspaceInvitations,
@@ -326,10 +367,12 @@ export function useSettingsData() {
     isLoadingWorkspace,
     isLoadingTeam,
     isSavingSendMode,
+    isSavingTimezone,
     isCreatingInvite,
     pendingActionId,
     latestInviteLink,
     saveSendMode,
+    saveTimezone,
     handleInviteSubmit,
     handleMembershipRoleChange,
     handleMembershipRemove,

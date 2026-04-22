@@ -151,6 +151,11 @@ export function CampaignsListCard({
                     - Instancia:{" "}
                     {campaign.whatsapp_instance_name || "Instancia excluida"}
                   </span>
+                  {campaign.status === "scheduled" && campaign.scheduled_at_local ? (
+                    <span className="mt-1 block text-xs text-violet-700 dark:text-violet-100">
+                      Agendada para {campaign.scheduled_at_local.replace("T", " ")}
+                    </span>
+                  ) : null}
                 </div>
 
                 <div className="flex flex-col gap-3 md:flex-row md:items-center">
@@ -243,6 +248,8 @@ function campaignTargetLabelFromForm(targetTag: string) {
     target_list: "",
     message_template: "",
     send_mode: "slow",
+    schedule_type: "now",
+    scheduled_for_local: "",
     media_type: "none",
     media_file: null,
     media_file_url: null,

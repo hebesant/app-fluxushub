@@ -37,6 +37,12 @@ export function SettingsPage() {
             workspaceName={settings.workspaceName}
             currentRoleLabel={settings.currentRoleLabel}
             selectedModeName={settings.selectedMode?.name ?? "Lento"}
+            selectedTimezone={settings.selectedTimezone}
+            browserTimezone={settings.browserTimezone}
+            isSavingTimezone={settings.isSavingTimezone}
+            canManageWorkspace={settings.canManageTeam}
+            onTimezoneChange={settings.setSelectedTimezone}
+            onSaveTimezone={settings.saveTimezone}
           />
         ) : null}
 

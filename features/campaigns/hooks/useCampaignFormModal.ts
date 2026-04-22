@@ -46,8 +46,13 @@ export function useCampaignFormModal({
     (form.target_type === "list" && selectedListIsValid);
   const canContinueCurrentStep =
     currentStep === 1 ? canContinueContent : canContinueAudience;
+  const hasValidSchedule =
+    form.schedule_type === "now" || Boolean(form.scheduled_for_local.trim());
   const canSubmit =
-    canContinueContent && canContinueAudience && Boolean(form.whatsapp_instance);
+    canContinueContent &&
+    canContinueAudience &&
+    Boolean(form.whatsapp_instance) &&
+    hasValidSchedule;
 
   useEffect(() => {
     return () => {

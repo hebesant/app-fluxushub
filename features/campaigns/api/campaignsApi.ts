@@ -107,6 +107,8 @@ export function saveCampaign(
   body.append("target_list", form.target_list);
   body.append("message_template", form.message_template);
   body.append("send_mode", form.send_mode);
+  body.append("schedule_type", form.schedule_type);
+  body.append("scheduled_for_local", form.scheduled_for_local);
   body.append("media_type", form.media_type);
 
   if (form.media_file) {

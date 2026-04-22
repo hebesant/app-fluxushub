@@ -3,6 +3,7 @@ export type Workspace = {
   name: string;
   slug: string;
   document: string;
+  timezone: string;
   default_send_mode: "slow" | "normal" | "fast";
   is_active: boolean;
   created_at: string;
@@ -86,6 +87,7 @@ export type WhatsAppInstance = {
 
 export type CampaignStatus =
   | "draft"
+  | "scheduled"
   | "ready"
   | "sending"
   | "sent"
@@ -109,6 +111,8 @@ export type Campaign = {
   media_file: string | null;
   media_file_url: string | null;
   status: CampaignStatus;
+  scheduled_at: string | null;
+  scheduled_at_local: string | null;
   recipients_count: number;
   pending_count: number;
   sent_count: number;

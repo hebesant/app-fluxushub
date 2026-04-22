@@ -17,6 +17,19 @@ export type SettingsTab = "workspace" | "team" | "sending" | "account";
 export type SendMode = "slow" | "normal" | "fast";
 export type MvpAssignableRole = Extract<Membership["role"], "member" | "owner">;
 
+const fallbackTimezoneOptions = [
+  "America/Sao_Paulo",
+  "America/Recife",
+  "America/Fortaleza",
+  "America/Manaus",
+  "America/Belem",
+  "America/Cuiaba",
+  "America/Porto_Velho",
+  "America/Rio_Branco",
+  "America/Noronha",
+  "UTC",
+];
+
 export const settingsTabs: Array<{
   id: SettingsTab;
   label: string;
@@ -117,4 +130,19 @@ export function InfoCard({
       <p className="mt-2 text-xs leading-5 text-muted-foreground">{helper}</p>
     </div>
   );
+}
+
+export function getTimezoneOptions(currentTimezone?: string, browserTimezone?: string) {
+  const supported =
+    typeof Intl !== "undefined" && "supportedValuesOf" in Intl
+      ? Intl.supportedValuesOf("timeZone")
+      : fallbackTimezoneOptions;
+
+  return Array.from(
+    new Set(
+      [currentTimezone, browserTimezone, ...supported].filter(
+        (value): value is string => Boolean(value)
+      )
+    )
+  ).sort((left, right) => left.localeCompare(right));
 }

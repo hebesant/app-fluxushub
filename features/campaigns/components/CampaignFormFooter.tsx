@@ -7,6 +7,8 @@ type CampaignFormFooterProps = {
   isSubmitting: boolean;
   canContinueCurrentStep: boolean;
   canSubmit: boolean;
+  primaryActionLabel: string;
+  primaryActionLoadingLabel: string;
   onCancel: () => void;
   onGoBack: () => void;
   onGoNext: () => void;
@@ -20,6 +22,8 @@ export function CampaignFormFooter({
   isSubmitting,
   canContinueCurrentStep,
   canSubmit,
+  primaryActionLabel,
+  primaryActionLoadingLabel,
   onCancel,
   onGoBack,
   onGoNext,
@@ -69,7 +73,7 @@ export function CampaignFormFooter({
               disabled={isSubmitting || !canSubmit}
               className="h-10 bg-emerald-500 text-white hover:bg-emerald-400"
             >
-              {isSubmitting ? "Enviando..." : "Enviar disparo"}
+              {isSubmitting ? primaryActionLoadingLabel : primaryActionLabel}
             </Button>
           </>
         )}

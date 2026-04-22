@@ -90,3 +90,14 @@ export function sendModeLabel(sendMode: CampaignForm["send_mode"]) {
   const option = concreteSendModes.find((item) => item.id === sendMode);
   return `${option?.name ?? "Lento"} ${option?.delay ?? "12s"}`;
 }
+
+export function scheduleLabel(
+  form: Pick<CampaignForm, "schedule_type" | "scheduled_for_local">,
+  workspaceTimezone: string
+) {
+  if (form.schedule_type !== "scheduled" || !form.scheduled_for_local) {
+    return "Enviar agora";
+  }
+
+  return `${form.scheduled_for_local.replace("T", " ")} (${workspaceTimezone})`;
+}

@@ -12,7 +12,7 @@ export function fetchWorkspaces(token: string) {
 export function updateWorkspaceSettings(
   token: string,
   workspaceId: number,
-  data: Pick<Workspace, "default_send_mode">
+  data: Pick<Workspace, "default_send_mode" | "timezone">
 ) {
   return apiRequest<Workspace>(`/api/workspaces/${workspaceId}/`, {
     method: "PATCH",

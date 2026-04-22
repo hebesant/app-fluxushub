@@ -28,8 +28,10 @@ export function CampaignActionsMenu({
   onRetryFailed,
   onDetails,
 }: CampaignActionsMenuProps) {
-  const canEdit = campaign.status === "draft";
-  const canSend = ["draft", "failed", "ready"].includes(campaign.status);
+  const canEdit = ["draft", "scheduled"].includes(campaign.status);
+  const canSend = ["draft", "scheduled", "failed", "ready"].includes(
+    campaign.status
+  );
   const canRetryFailed = campaign.status === "failed" && campaign.failed_count > 0;
   const canCancel = !["sent", "canceled"].includes(campaign.status);
 

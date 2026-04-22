@@ -62,6 +62,9 @@ export function CampaignsPage() {
       {formActions.isFormOpen ? (
         <CampaignFormModal
           form={formActions.form}
+          workspaceTimezone={
+            campaignsData.activeWorkspace?.timezone ?? "America/Sao_Paulo"
+          }
           connectedInstances={campaignsData.connectedInstances}
           instances={campaignsData.instances}
           availableTags={campaignsData.availableTags}

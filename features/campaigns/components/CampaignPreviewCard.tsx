@@ -29,7 +29,7 @@ export function CampaignPreviewCard({
   onSend,
 }: CampaignPreviewCardProps) {
   const canSendStatus = selectedCampaign
-    ? ["draft", "failed", "ready"].includes(selectedCampaign.status)
+    ? ["draft", "scheduled", "failed", "ready"].includes(selectedCampaign.status)
     : false;
 
   return (
@@ -59,6 +59,12 @@ export function CampaignPreviewCard({
                   ? `Lista: ${selectedCampaign.target_list}`
                   : `Segmento: ${campaignTargetLabelFromTags(selectedCampaign.target_tag)}`}
             </p>
+            {selectedCampaign.status === "scheduled" &&
+            selectedCampaign.scheduled_at_local ? (
+              <p className="mt-1 text-xs text-violet-700 dark:text-violet-100">
+                Agendada para {selectedCampaign.scheduled_at_local.replace("T", " ")}
+              </p>
+            ) : null}
           </div>
 
           <div className="rounded-lg border border-border bg-muted/45 p-3 dark:border-white/10 dark:bg-neutral-950/35">
@@ -183,7 +189,9 @@ export function CampaignPreviewCard({
                   ? "Preparando disparo..."
                   : isSending
                     ? "Enviando..."
-                    : "Enviar disparo"}
+                    : selectedCampaign.status === "scheduled"
+                      ? "Enviar agora"
+                      : "Enviar disparo"}
               </Button>
             </div>
           ) : (
@@ -218,6 +226,8 @@ function campaignTargetLabelFromTags(targetTag: string) {
     target_list: "",
     message_template: "",
     send_mode: "slow",
+    schedule_type: "now",
+    scheduled_for_local: "",
     media_type: "none",
     media_file: null,
     media_file_url: null,
