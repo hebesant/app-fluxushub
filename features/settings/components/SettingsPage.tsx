@@ -55,6 +55,7 @@ import {
 
 type SettingsTab = "workspace" | "team" | "sending" | "account";
 type SendMode = "slow" | "normal" | "fast";
+type MvpAssignableRole = Extract<Membership["role"], "member" | "owner">;
 
 const tabs: Array<{
   id: SettingsTab;
@@ -105,7 +106,7 @@ export function SettingsPage() {
   const [isLoadingTeam, setIsLoadingTeam] = useState(true);
   const [isSavingSendMode, setIsSavingSendMode] = useState(false);
   const [inviteEmail, setInviteEmail] = useState("");
-  const [inviteRole, setInviteRole] = useState<Membership["role"]>("member");
+  const [inviteRole, setInviteRole] = useState<MvpAssignableRole>("member");
   const [inviteExpiry, setInviteExpiry] = useState<30 | 120 | 1440 | 10080>(1440);
   const [isCreatingInvite, setIsCreatingInvite] = useState(false);
   const [pendingActionId, setPendingActionId] = useState<number | null>(null);
@@ -143,6 +144,22 @@ export function SettingsPage() {
     }
     return "Member";
   }, [currentWorkspaceMembership]);
+  const visibleRoleOptions: Array<{
+    value: MvpAssignableRole;
+    label: string;
+  }> = [
+    { value: "member", label: "Member" },
+    { value: "owner", label: "Owner" },
+  ];
+  const getRoleLabel = (role: Membership["role"]) => {
+    if (role === "owner") {
+      return "Owner";
+    }
+    if (role === "admin") {
+      return "Admin";
+    }
+    return "Member";
+  };
 
   useEffect(() => {
     const token = getAccessToken();
@@ -450,16 +467,18 @@ export function SettingsPage() {
                         <Select
                           value={inviteRole}
                           onValueChange={(value) =>
-                            setInviteRole(value as Membership["role"])
+                            setInviteRole(value as MvpAssignableRole)
                           }
                         >
                           <SelectTrigger>
                             <SelectValue placeholder="Papel" />
                           </SelectTrigger>
                           <SelectContent>
-                            <SelectItem value="member">Member</SelectItem>
-                            <SelectItem value="admin">Admin</SelectItem>
-                            <SelectItem value="owner">Owner</SelectItem>
+                            {visibleRoleOptions.map((option) => (
+                              <SelectItem key={option.value} value={option.value}>
+                                {option.label}
+                              </SelectItem>
+                            ))}
                           </SelectContent>
                         </Select>
                         <Select
@@ -554,11 +573,13 @@ export function SettingsPage() {
                         </div>
 
                         <Select
-                          value={membership.role}
+                          value={
+                            membership.role === "admin" ? "member" : membership.role
+                          }
                           onValueChange={(value) =>
                             handleMembershipRoleChange(
                               membership.id,
-                              value as Membership["role"]
+                              value as MvpAssignableRole
                             )
                           }
                           disabled={!canManageTeam || pendingActionId === membership.id}
@@ -567,9 +588,11 @@ export function SettingsPage() {
                             <SelectValue />
                           </SelectTrigger>
                           <SelectContent>
-                            <SelectItem value="member">Member</SelectItem>
-                            <SelectItem value="admin">Admin</SelectItem>
-                            <SelectItem value="owner">Owner</SelectItem>
+                            {visibleRoleOptions.map((option) => (
+                              <SelectItem key={option.value} value={option.value}>
+                                {option.label}
+                              </SelectItem>
+                            ))}
                           </SelectContent>
                         </Select>
 
@@ -583,6 +606,13 @@ export function SettingsPage() {
                             Remover
                           </Button>
                         </div>
+
+                        {membership.role === "admin" ? (
+                          <p className="text-xs text-muted-foreground lg:col-span-3">
+                            Papel legado preservado no backend. No MVP, o app trabalha
+                            apenas com Owner e Member nas novas atribuicoes.
+                          </p>
+                        ) : null}
                       </div>
                     ))
                   ) : (
@@ -623,7 +653,7 @@ export function SettingsPage() {
                             {invitation.email || "Link aberto para novo membro"}
                           </p>
                           <p className="mt-1 text-sm text-muted-foreground">
-                            Papel: {invitation.role} · Expira em{" "}
+                            Papel: {getRoleLabel(invitation.role)} · Expira em{" "}
                             {new Date(invitation.expires_at).toLocaleDateString("pt-BR")}
                           </p>
                         </div>
