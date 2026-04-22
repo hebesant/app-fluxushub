@@ -28,11 +28,11 @@
   - `contacts/`: API, hooks, componentes, tipos e utilitarios de contatos/importacao.
   - `campaigns/`: API, hooks, componentes, tipos, constantes e fluxo de campanhas.
   - `whatsapp/`: API, hooks, componentes e tipos de instancias WhatsApp.
-  - `settings/`: API e pagina de configuracoes.
+  - `settings/`: API, hook de dados e componentes separados por aba para configuracoes.
 - `components/ui/`: componentes base no estilo shadcn/Radix.
 - `components/layout/`: shell, sidebar e topbar da area autenticada.
 - `components/brand/`: logo da Fluxus Hub.
-- `lib/`: cliente HTTP, auth, navegacao e utilitarios.
+- `lib/`: cliente HTTP, auth, tipos compartilhados, navegacao e utilitarios.
 - `public/`: logos SVG usados no layout e favicon por metadata.
 
 ## Como Executar Localmente
@@ -69,12 +69,11 @@ pnpm start
   - `hooks/` para estado, busca de dados e acoes.
   - `components/` para UI.
   - `types.ts`, `constants.ts` e `utils/` quando necessario.
-- `lib/api.ts` centraliza:
-  - tipos compartilhados da API,
-  - `apiRequest`,
-  - access token JWT em memoria,
-  - refresh de access token via cookie `HttpOnly`,
-  - formatacao basica de erros.
+- `lib/api.ts` funciona como fachada/barrel.
+- A separacao interna atual em `lib/` e:
+  - `api-types.ts` para contratos/tipos compartilhados,
+  - `auth-session.ts` para token em memoria e limpeza de sessao,
+  - `api-client.ts` para `apiRequest`, refresh/logout e formatacao de erros.
 - O app agora usa tambem um cache de sessao em memoria para dados de tela, reaproveitando resultados recentes entre navegacoes internas e revalidando ao fundo para reduzir o "pisca" de carregamento ao trocar de aba.
 - Area autenticada usa `AppShell`, `AppSidebar` e `AppTopbar`.
 - `app/(app)/layout.tsx` envolve a area autenticada com `AuthProvider`; `useAuth` compartilha em memoria o contexto de `/api/auth/me/`, tenta renovar o access token por `/api/auth/token/refresh/` e redireciona para `/login` se nao houver sessao valida.
@@ -83,6 +82,7 @@ pnpm start
 - Campanhas e contatos usam paginacao de 20 itens por pagina nos hooks.
 - Listas/tags de contatos aceitam resposta paginada ou array legado no front.
 - Detalhes de campanha buscam campanha, preview, destinatarios e eventos em paralelo; destinatarios/eventos aceitam resposta paginada ou array legado.
+- O runtime de campanhas foi dividido entre hook de detalhes/polling e hook de mutacoes, para reduzir acoplamento no modulo operacional.
 - `next.config.ts` define build standalone, Strict Mode, remove `X-Powered-By`, habilita compressao e permite imagens de `/media/**` vindas da API local/producao.
 - Testes frontend usam Vitest em ambiente `jsdom`, com setup em `test/setup.ts`.
 
@@ -112,6 +112,7 @@ pnpm start
 - WhatsApp suporta criacao, conexao por QR Code, status, edicao, desconexao e exclusao de instancias.
 - Configuracoes incluem workspace, conta e modo padrao de envio.
 - Configuracoes agora incluem uma aba de equipe para owners gerenciarem membros, papeis e convites pendentes do workspace atual.
+- A tela de configuracoes nao deve concentrar toda a logica de dados e UI em um arquivo unico; manter `useSettingsData` como ponto de orquestracao e seções por aba em componentes separados.
 - A aba de equipe foi reposicionada para convites por link compartilhavel, nao envio de e-mail transacional; owner escolhe papel e expiracao por presets e compartilha manualmente o link.
 - No MVP, o app nao deve expor o papel `admin` na interface de configuracoes; a UX trabalha com `owner` e `member`, embora o papel `admin` continue existindo no backend para futura expansao.
 - Na pratica, selects e acoes da aba `Equipe` devem oferecer apenas `owner` e `member`; se aparecer algum membership legado com papel `admin`, a UI pode exibi-lo como contexto, mas nao deve incentivar novas atribuicoes desse papel.

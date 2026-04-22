@@ -21,14 +21,14 @@ export function DashboardHero({
       <div className="flex flex-col gap-5 lg:flex-row lg:items-center lg:justify-between">
         <div>
           <p className="text-sm font-semibold uppercase tracking-[0.18em] text-primary-300 light:text-primary-700">
-            Visao geral
+            Visão geral
           </p>
           <h2 className="mt-3 max-w-3xl text-3xl font-semibold leading-tight text-foreground dark:text-white sm:text-4xl">
             {title}
           </h2>
           <p className="mt-4 max-w-2xl leading-7 text-muted-foreground">
-            Acompanhe conexoes, base de contatos e campanhas recentes em um
-            unico lugar.
+            Acompanhe conexões, base de contatos e campanhas recentes em um
+            único lugar.
           </p>
         </div>
 
