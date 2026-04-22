@@ -3,6 +3,7 @@ import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import type { Campaign, CampaignPreview, CampaignRecipient } from "@/lib/api";
+import { campaignTargetLabel as campaignFormTargetLabel } from "./campaignFormUtils";
 
 type CampaignPreviewCardProps = {
   selectedCampaign: Campaign | null;
@@ -54,7 +55,9 @@ export function CampaignPreviewCard({
             <p className="mt-1 text-xs text-neutral-500">
               {selectedCampaign.target_type === "all"
                 ? "Base inteira"
-                : `Segmento: ${selectedCampaign.target_tag}`}
+                : selectedCampaign.target_type === "list"
+                  ? `Lista: ${selectedCampaign.target_list}`
+                  : `Segmento: ${campaignTargetLabelFromTags(selectedCampaign.target_tag)}`}
             </p>
           </div>
 
@@ -203,6 +206,22 @@ export function CampaignPreviewCard({
       )}
     </Card>
   );
+}
+
+function campaignTargetLabelFromTags(targetTag: string) {
+  return campaignFormTargetLabel({
+    name: "",
+    workspace: "",
+    whatsapp_instance: "",
+    target_type: "tag",
+    target_tag: targetTag,
+    target_list: "",
+    message_template: "",
+    send_mode: "slow",
+    media_type: "none",
+    media_file: null,
+    media_file_url: null,
+  });
 }
 
 function RecipientCount({ label, value }: { label: string; value: number }) {

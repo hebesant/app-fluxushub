@@ -106,6 +106,7 @@ pnpm start
 - Dashboard esta dividido em API, hook, utilitarios e componentes menores.
 - Contatos suportam listagem, busca, filtros, importacao, tags/listas e acoes em massa.
 - Campanhas suportam criacao em etapas, alvos por tag/lista/todos, preview, midia, modo de envio, detalhes, envio, cancelamento e reenvio de falhas.
+- No fluxo por tag, a interface deve permitir selecionar multiplas tags; o backend continua responsavel por deduplicar contatos que caiam em mais de uma tag selecionada.
 - Na interface, o modulo `/campaigns` vem sendo apresentado como area de `Disparos`, mantendo a mesma estrutura tecnica por baixo.
 - Modal de campanha esta dividido entre componente de composicao, hook de estado/acoes e subcomponentes de header/footer/steps.
 - WhatsApp suporta criacao, conexao por QR Code, status, edicao, desconexao e exclusao de instancias.

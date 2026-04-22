@@ -1,7 +1,10 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import type { CampaignForm } from "../types";
 import type { CampaignFormStep } from "../components/campaignFormTypes";
-import { maxVideoSizeBytes } from "../components/campaignFormUtils";
+import {
+  maxVideoSizeBytes,
+  parseCampaignTargetTags,
+} from "../components/campaignFormUtils";
 
 type UseCampaignFormModalParams = {
   form: CampaignForm;
@@ -27,7 +30,13 @@ export function useCampaignFormModal({
     [form.media_file]
   );
   const mediaPreviewUrl = localPreviewUrl || form.media_file_url;
-  const selectedTagIsValid = availableTags.includes(form.target_tag);
+  const selectedTags = useMemo(
+    () => parseCampaignTargetTags(form.target_tag),
+    [form.target_tag]
+  );
+  const selectedTagIsValid =
+    selectedTags.length > 0 &&
+    selectedTags.every((tag) => availableTags.includes(tag));
   const selectedListIsValid = availableLists.includes(form.target_list);
   const canContinueContent =
     Boolean(form.name.trim()) && Boolean(form.message_template.trim());
@@ -95,6 +104,14 @@ export function useCampaignFormModal({
     }
   }
 
+  function toggleTargetTag(tag: string) {
+    const nextTags = selectedTags.includes(tag)
+      ? selectedTags.filter((currentTag) => currentTag !== tag)
+      : [...selectedTags, tag];
+
+    onChange("target_tag", nextTags.join(","));
+  }
+
   function applyTextFormat(prefix: "*" | "_", fallbackText: string) {
     const textarea = messageTextareaRef.current;
     const currentMessage = form.message_template;
@@ -130,15 +147,16 @@ export function useCampaignFormModal({
     mediaPreviewUrl,
     messageTextareaRef,
     selectedTagIsValid,
+    selectedTags,
     selectedListIsValid,
     canContinueCurrentStep,
     canSubmit,
     goNext,
     goBack,
     handleTargetTypeChange,
+    toggleTargetTag,
     applyTextFormat,
     handleMediaFileChange,
     removeMedia,
   };
 }
-

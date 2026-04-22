@@ -82,10 +82,12 @@ export function CampaignFormModal({
             form={form}
             availableTags={availableTags}
             availableLists={availableLists}
+            selectedTags={modalState.selectedTags}
             selectedTagIsValid={modalState.selectedTagIsValid}
             selectedListIsValid={modalState.selectedListIsValid}
             onChange={onChange}
             onTargetTypeChange={modalState.handleTargetTypeChange}
+            onToggleTargetTag={modalState.toggleTargetTag}
           />
         ) : null}
 

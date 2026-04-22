@@ -56,7 +56,22 @@ export function campaignTargetLabel(form: CampaignForm) {
     return form.target_list || "Lista nao selecionada";
   }
 
-  return form.target_tag || "Tag nao selecionada";
+  const tags = parseCampaignTargetTags(form.target_tag);
+
+  if (!tags.length) {
+    return "Tag nao selecionada";
+  }
+
+  return tags.join(", ");
+}
+
+export function parseCampaignTargetTags(value: string) {
+  const tags = value
+    .split(",")
+    .map((item) => item.trim())
+    .filter(Boolean);
+
+  return Array.from(new Set(tags));
 }
 
 export function mediaLabel(mediaType: CampaignForm["media_type"]) {

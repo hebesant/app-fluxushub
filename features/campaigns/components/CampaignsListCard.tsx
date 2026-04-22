@@ -16,6 +16,7 @@ import {
   campaignStatusLabels,
 } from "../constants";
 import type { CampaignStatusFilter, CampaignTargetFilter } from "../types";
+import { campaignTargetLabel as campaignFormTargetLabel } from "./campaignFormUtils";
 import { CampaignActionsMenu } from "./CampaignActionsMenu";
 
 type CampaignsListCardProps = {
@@ -146,7 +147,7 @@ export function CampaignsListCard({
                     </Badge>
                   </span>
                   <span className="mt-2 block text-sm text-neutral-400">
-                    {campaignTargetLabel(campaign)}{" "}
+                    {renderCampaignTargetLabel(campaign)}{" "}
                     - Instancia:{" "}
                     {campaign.whatsapp_instance_name || "Instancia excluida"}
                   </span>
@@ -220,7 +221,7 @@ export function CampaignsListCard({
   );
 }
 
-function campaignTargetLabel(campaign: Campaign) {
+function renderCampaignTargetLabel(campaign: Campaign) {
   if (campaign.target_type === "all") {
     return "Base inteira";
   }
@@ -229,5 +230,21 @@ function campaignTargetLabel(campaign: Campaign) {
     return `Lista: ${campaign.target_list}`;
   }
 
-  return `Segmento: ${campaign.target_tag}`;
+  return `Segmento: ${campaignTargetLabelFromForm(campaign.target_tag)}`;
+}
+
+function campaignTargetLabelFromForm(targetTag: string) {
+  return campaignFormTargetLabel({
+    name: "",
+    workspace: "",
+    whatsapp_instance: "",
+    target_type: "tag",
+    target_tag: targetTag,
+    target_list: "",
+    message_template: "",
+    send_mode: "slow",
+    media_type: "none",
+    media_file: null,
+    media_file_url: null,
+  });
 }

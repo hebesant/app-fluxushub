@@ -3,6 +3,7 @@ import type { CampaignForm } from "../types";
 import {
   campaignTargetLabel,
   mediaLabel,
+  parseCampaignTargetTags,
   renderLocalPreview,
   sendModeLabel,
 } from "./campaignFormUtils";
@@ -45,9 +46,23 @@ describe("campaign form utils", () => {
       campaignTargetLabel({
         ...baseForm,
         target_type: "tag",
+        target_tag: "vip,promocao",
+      })
+    ).toBe("vip, promocao");
+    expect(
+      campaignTargetLabel({
+        ...baseForm,
+        target_type: "tag",
         target_tag: "",
       })
     ).toBe("Tag nao selecionada");
+  });
+
+  it("normalizes selected tags from comma separated values", () => {
+    expect(parseCampaignTargetTags("vip, promocao, vip")).toEqual([
+      "vip",
+      "promocao",
+    ]);
   });
 
   it("labels media and send modes used in the MVP campaign flow", () => {

@@ -9,7 +9,7 @@ function renderCampaignFormHook(form: CampaignForm) {
     ({ currentForm }) =>
       useCampaignFormModal({
         form: currentForm,
-        availableTags: ["vip"],
+        availableTags: ["vip", "promocao"],
         availableLists: ["livia"],
         onChange,
       }),
@@ -43,7 +43,7 @@ describe("useCampaignFormModal", () => {
       name: "Campanha VIP",
       message_template: "Ola {{first_name}}",
       target_type: "tag",
-      target_tag: "vip",
+      target_tag: "vip,promocao",
     });
 
     act(() => result.current.goNext());
@@ -85,6 +85,20 @@ describe("useCampaignFormModal", () => {
     expect(onChange).toHaveBeenCalledWith("target_type", "list");
     expect(onChange).toHaveBeenCalledWith("target_tag", "");
     expect(onChange).not.toHaveBeenCalledWith("target_list", "");
+  });
+
+  it("toggles tags and keeps the payload comma separated", () => {
+    const { result, onChange } = renderCampaignFormHook({
+      ...initialCampaignForm,
+      target_type: "tag",
+      target_tag: "vip",
+    });
+
+    act(() => result.current.toggleTargetTag("promocao"));
+    expect(onChange).toHaveBeenCalledWith("target_tag", "vip,promocao");
+
+    act(() => result.current.toggleTargetTag("vip"));
+    expect(onChange).toHaveBeenCalledWith("target_tag", "");
   });
 
   it("rejects videos larger than the MVP upload limit", () => {

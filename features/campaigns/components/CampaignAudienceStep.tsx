@@ -1,4 +1,5 @@
 import { Users } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
 import { Label } from "@/components/ui/label";
 import {
   Select,
@@ -14,20 +15,24 @@ type CampaignAudienceStepProps = {
   form: CampaignForm;
   availableTags: string[];
   availableLists: string[];
+  selectedTags: string[];
   selectedTagIsValid: boolean;
   selectedListIsValid: boolean;
   onChange: CampaignFormChangeHandler;
   onTargetTypeChange: (value: CampaignForm["target_type"]) => void;
+  onToggleTargetTag: (tag: string) => void;
 };
 
 export function CampaignAudienceStep({
   form,
   availableTags,
   availableLists,
+  selectedTags,
   selectedTagIsValid,
   selectedListIsValid,
   onChange,
   onTargetTypeChange,
+  onToggleTargetTag,
 }: CampaignAudienceStepProps) {
   return (
     <div className="mt-5 space-y-4">
@@ -63,24 +68,37 @@ export function CampaignAudienceStep({
       </label>
 
       {form.target_type === "tag" ? (
-        <label className="block">
-          <Label>Tag alvo</Label>
-          <Select
-            value={form.target_tag}
-            onValueChange={(value) => onChange("target_tag", value)}
-            disabled={!availableTags.length}
-          >
-            <SelectTrigger className="mt-2">
-              <SelectValue placeholder="Selecione uma tag" />
-            </SelectTrigger>
-            <SelectContent>
-              {availableTags.map((tag) => (
-                <SelectItem key={tag} value={tag}>
+        <div className="block">
+          <Label>Tags alvo</Label>
+          <div className="mt-2 flex flex-wrap gap-2">
+            {availableTags.map((tag) => {
+              const isSelected = selectedTags.includes(tag);
+
+              return (
+                <button
+                  key={tag}
+                  type="button"
+                  onClick={() => onToggleTargetTag(tag)}
+                  className={`rounded-lg border px-3 py-2 text-sm transition ${
+                    isSelected
+                      ? "border-primary-500 bg-primary-500/10 text-primary-700 dark:text-primary-100"
+                      : "border-border bg-muted/45 text-foreground hover:bg-muted/70 dark:border-white/10 dark:bg-neutral-950/40 dark:text-white dark:hover:bg-white/8"
+                  }`}
+                >
                   {tag}
-                </SelectItem>
+                </button>
+              );
+            })}
+          </div>
+          {selectedTags.length ? (
+            <div className="mt-3 flex flex-wrap gap-2">
+              {selectedTags.map((tag) => (
+                <Badge key={tag} variant="outline">
+                  {tag}
+                </Badge>
               ))}
-            </SelectContent>
-          </Select>
+            </div>
+          ) : null}
           {!availableTags.length ? (
             <p className="mt-2 text-xs text-amber-800 dark:text-amber-100">
               Crie ou importe contatos com tags antes de disparar para esse
@@ -88,10 +106,14 @@ export function CampaignAudienceStep({
             </p>
           ) : !selectedTagIsValid ? (
             <p className="mt-2 text-xs text-amber-800 dark:text-amber-100">
-              Selecione uma tag para continuar.
+              Selecione uma ou mais tags para continuar.
             </p>
-          ) : null}
-        </label>
+          ) : (
+            <p className="mt-2 text-xs text-muted-foreground">
+              Contatos com mais de uma tag selecionada receberao apenas uma mensagem.
+            </p>
+          )}
+        </div>
       ) : null}
 
       {form.target_type === "list" ? (
