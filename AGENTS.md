@@ -108,6 +108,9 @@ pnpm start
 - Modal de campanha esta dividido entre componente de composicao, hook de estado/acoes e subcomponentes de header/footer/steps.
 - WhatsApp suporta criacao, conexao por QR Code, status, edicao, desconexao e exclusao de instancias.
 - Configuracoes incluem workspace, conta e modo padrao de envio.
+- Configuracoes agora incluem uma aba de equipe para owners gerenciarem membros, papeis e convites pendentes do workspace atual.
+- O proximo ciclo de produto/front esta orientado por administracao de usuarios/workspaces, convites/permissoes e billing real.
+- Decisao atual de produto: o painel master interno nao precisa nascer no app; neste primeiro ciclo ele pode viver no Django Admin do backend, enquanto o app foca a experiencia do owner e dos membros do workspace.
 - `README.md` contem setup local, scripts, rotas principais e notas de integracao com o backend.
 - `.env.example` documenta `NEXT_PUBLIC_API_URL`.
 - `.env.example` aponta para `https://api.fluxushub.com.br`; para desenvolvimento local, usar `.env.local` com `http://localhost:8000`.
@@ -127,5 +130,12 @@ pnpm start
 
 ## Proximos Passos Provaveis
 
+- Prioridade 1: evoluir a experiencia administrativa para um painel master interno e, no app, ampliar a area de configuracoes para owners gerenciarem membros, convites, papeis e configuracoes do workspace.
+- A primeira entrega dessa evolucao agora usa a propria tela `/settings` para listar membros, alterar papeis, remover acessos e enviar/revogar convites quando o usuario atual for owner.
+- Prioridade 2: desenhar no front os fluxos de permissao por papel e estados de convite/aceite antes de abrir o produto para mais usuarios.
+- Prioridade 3: integrar billing com Stripe no app, incluindo leitura de assinatura, trial, plano ativo e cobranca por numero adicional.
+- Prioridade 4: preparar a UX de trial para pequenos estabelecimentos reais, com onboarding simples e limites claros de uso.
+- Fase 1 do app deve focar a aba de configuracoes do owner: membros, convites, papeis, perfil do workspace e visibilidade de limites/plano.
+- A UX de billing no app deve nascer orientada ao workspace: owner responsavel, assinatura unica por workspace e numeros adicionais como expansao da mesma assinatura.
 - Expandir testes de componentes para auth, WhatsApp e configuracoes quando esses fluxos estabilizarem.
 - Adicionar smoke tests E2E com Playwright antes de automatizar deploys.

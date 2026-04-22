@@ -14,6 +14,7 @@ export type Membership = {
   id: number;
   user: number;
   user_email: string;
+  user_full_name: string;
   workspace: number;
   workspace_name: string;
   role: "owner" | "admin" | "member";
@@ -197,11 +198,16 @@ export type AuthResponse = {
 };
 
 export type Invitation = {
+  id: number;
   email: string;
   workspace: number;
   workspace_name: string;
   role: "owner" | "admin" | "member";
+  token: string;
+  accept_url: string;
   expires_at: string;
+  accepted_at: string | null;
+  created_at: string;
   is_expired: boolean;
   is_accepted: boolean;
   is_valid: boolean;
