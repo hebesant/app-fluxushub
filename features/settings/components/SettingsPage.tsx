@@ -3,7 +3,9 @@
 import {
   Building2,
   Check,
+  Copy,
   Gauge,
+  Link2,
   MailPlus,
   Shield,
   Rocket,
@@ -104,8 +106,10 @@ export function SettingsPage() {
   const [isSavingSendMode, setIsSavingSendMode] = useState(false);
   const [inviteEmail, setInviteEmail] = useState("");
   const [inviteRole, setInviteRole] = useState<Membership["role"]>("member");
+  const [inviteExpiry, setInviteExpiry] = useState<30 | 120 | 1440 | 10080>(1440);
   const [isCreatingInvite, setIsCreatingInvite] = useState(false);
   const [pendingActionId, setPendingActionId] = useState<number | null>(null);
+  const [latestInviteLink, setLatestInviteLink] = useState("");
   const workspaceName =
     workspace?.name ?? user?.memberships[0]?.workspace_name ?? "Workspace";
   const name = user?.full_name || user?.email || "Usuario";
@@ -216,14 +220,19 @@ export function SettingsPage() {
     try {
       await createInvitation(token, {
         workspace: workspace.id,
-        email: inviteEmail,
         role: inviteRole,
+        email: inviteEmail.trim() || undefined,
+        expires_in_minutes: inviteExpiry,
       });
       const refreshedInvitations = await fetchInvitations(token);
+      const newestInvite =
+        refreshedInvitations.find((invitation) => invitation.accept_url) ?? null;
       setInvitations(refreshedInvitations);
+      setLatestInviteLink(newestInvite?.accept_url ?? "");
       setInviteEmail("");
       setInviteRole("member");
-      sonnerToast.success("Convite enviado.");
+      setInviteExpiry(1440);
+      sonnerToast.success("Link de convite gerado.");
     } catch (requestError) {
       sonnerToast.error(formatApiError(requestError));
     } finally {
@@ -291,6 +300,15 @@ export function SettingsPage() {
       sonnerToast.error(formatApiError(requestError));
     } finally {
       setPendingActionId(null);
+    }
+  }
+
+  async function copyInviteLink(link: string) {
+    try {
+      await navigator.clipboard.writeText(link);
+      sonnerToast.success("Link copiado.");
+    } catch {
+      sonnerToast.error("Nao foi possivel copiar o link.");
     }
   }
 
@@ -414,19 +432,20 @@ export function SettingsPage() {
                     <div className="flex-1 space-y-4">
                       <div>
                         <p className="font-medium text-foreground dark:text-white">
-                          Convidar novo usuario
+                          Gerar link de convite
                         </p>
                         <p className="mt-1 text-sm text-muted-foreground">
-                          O convite envia um link de aceite para o e-mail escolhido.
+                          Gere um link compartilhavel com papel e expiracao definidos.
                         </p>
                       </div>
 
-                      <div className="grid gap-3 lg:grid-cols-[1fr_180px_auto]">
+                      <div className="grid gap-3 lg:grid-cols-[minmax(0,1fr)_170px_170px_auto] lg:items-end">
                         <Input
                           type="email"
-                          placeholder="nome@empresa.com"
+                          placeholder="Opcional: nome@empresa.com"
                           value={inviteEmail}
                           onChange={(event) => setInviteEmail(event.target.value)}
+                          className="h-11"
                         />
                         <Select
                           value={inviteRole}
@@ -443,15 +462,55 @@ export function SettingsPage() {
                             <SelectItem value="owner">Owner</SelectItem>
                           </SelectContent>
                         </Select>
+                        <Select
+                          value={String(inviteExpiry)}
+                          onValueChange={(value) =>
+                            setInviteExpiry(Number(value) as 30 | 120 | 1440 | 10080)
+                          }
+                        >
+                          <SelectTrigger>
+                            <SelectValue placeholder="Expiracao" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="30">30 min</SelectItem>
+                            <SelectItem value="120">2 horas</SelectItem>
+                            <SelectItem value="1440">24 horas</SelectItem>
+                            <SelectItem value="10080">7 dias</SelectItem>
+                          </SelectContent>
+                        </Select>
                         <Button
                           type="button"
                           onClick={handleInviteSubmit}
-                          disabled={isCreatingInvite || !inviteEmail.trim()}
+                          disabled={isCreatingInvite}
                           className="h-11 bg-primary-500 text-white hover:bg-primary-400"
                         >
-                          {isCreatingInvite ? "Enviando..." : "Enviar convite"}
+                          {isCreatingInvite ? "Gerando..." : "Gerar link"}
                         </Button>
                       </div>
+
+                      {latestInviteLink ? (
+                        <div className="rounded-lg border border-border bg-muted/45 p-4 dark:border-white/10 dark:bg-neutral-950/40">
+                          <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
+                            <div className="min-w-0">
+                              <p className="font-medium text-foreground dark:text-white">
+                                Ultimo link gerado
+                              </p>
+                              <p className="mt-1 truncate text-sm text-muted-foreground">
+                                {latestInviteLink}
+                              </p>
+                            </div>
+                            <Button
+                              type="button"
+                              variant="outline"
+                              onClick={() => copyInviteLink(latestInviteLink)}
+                              className="h-10"
+                            >
+                              <Copy className="size-4" />
+                              Copiar link
+                            </Button>
+                          </div>
+                        </div>
+                      ) : null}
                     </div>
                   </div>
                 </div>
@@ -560,22 +619,31 @@ export function SettingsPage() {
                       >
                         <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
                           <div>
-                            <p className="font-medium text-foreground dark:text-white">
-                              {invitation.email}
-                            </p>
-                            <p className="mt-1 text-sm text-muted-foreground">
-                              Papel: {invitation.role} · Expira em{" "}
-                              {new Date(invitation.expires_at).toLocaleDateString("pt-BR")}
-                            </p>
-                          </div>
-                          <div className="flex flex-wrap items-center gap-2">
+                          <p className="font-medium text-foreground dark:text-white">
+                            {invitation.email || "Link aberto para novo membro"}
+                          </p>
+                          <p className="mt-1 text-sm text-muted-foreground">
+                            Papel: {invitation.role} · Expira em{" "}
+                            {new Date(invitation.expires_at).toLocaleDateString("pt-BR")}
+                          </p>
+                        </div>
+                        <div className="flex flex-wrap items-center gap-2">
+                            <Button
+                              type="button"
+                              variant="outline"
+                              onClick={() => copyInviteLink(invitation.accept_url)}
+                            >
+                              <Copy className="size-4" />
+                              Copiar
+                            </Button>
                             <Button asChild variant="outline">
                               <Link
                                 href={invitation.accept_url}
                                 target="_blank"
                                 rel="noopener noreferrer"
                               >
-                                Abrir link
+                                <Link2 className="size-4" />
+                                Abrir
                               </Link>
                             </Button>
                             <Button

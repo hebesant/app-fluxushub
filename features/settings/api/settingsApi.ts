@@ -52,8 +52,9 @@ export function createInvitation(
   token: string,
   data: {
     workspace: number;
-    email: string;
+    email?: string;
     role: Invitation["role"];
+    expires_in_minutes: 30 | 120 | 1440 | 10080;
   }
 ) {
   return apiRequest<Invitation>("/api/invitations/", {

@@ -205,6 +205,7 @@ export type Invitation = {
   role: "owner" | "admin" | "member";
   token: string;
   accept_url: string;
+  is_open_link: boolean;
   expires_at: string;
   accepted_at: string | null;
   created_at: string;

@@ -21,6 +21,7 @@ export function AcceptInviteCard() {
   const searchParams = useSearchParams();
   const token = searchParams.get("token") ?? "";
   const [invitation, setInvitation] = useState<Invitation | null>(null);
+  const [email, setEmail] = useState("");
   const [fullName, setFullName] = useState("");
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
@@ -51,6 +52,7 @@ export function AcceptInviteCard() {
         method: "POST",
         body: JSON.stringify({
           token,
+          email,
           full_name: fullName,
           username,
           password,
@@ -83,10 +85,25 @@ export function AcceptInviteCard() {
       ) : invitation ? (
         <>
           <p className="leading-7 text-muted-foreground">
-            Convite para {invitation.email} em {invitation.workspace_name}.
+            {invitation.is_open_link
+              ? `Convite aberto para entrar em ${invitation.workspace_name}.`
+              : `Convite para ${invitation.email} em ${invitation.workspace_name}.`}
           </p>
 
           <form className="mt-8 space-y-4" onSubmit={handleSubmit}>
+            {invitation.is_open_link ? (
+              <label className="block">
+                <Label>E-mail</Label>
+                <Input
+                  type="email"
+                  value={email}
+                  onChange={(event) => setEmail(event.target.value)}
+                  required
+                  className="mt-2 h-11"
+                />
+              </label>
+            ) : null}
+
             <label className="block">
               <Label>Nome completo</Label>
               <Input

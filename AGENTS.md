@@ -109,6 +109,7 @@ pnpm start
 - WhatsApp suporta criacao, conexao por QR Code, status, edicao, desconexao e exclusao de instancias.
 - Configuracoes incluem workspace, conta e modo padrao de envio.
 - Configuracoes agora incluem uma aba de equipe para owners gerenciarem membros, papeis e convites pendentes do workspace atual.
+- A aba de equipe foi reposicionada para convites por link compartilhavel, nao envio de e-mail transacional; owner escolhe papel e expiracao por presets e compartilha manualmente o link.
 - O proximo ciclo de produto/front esta orientado por administracao de usuarios/workspaces, convites/permissoes e billing real.
 - Decisao atual de produto: o painel master interno nao precisa nascer no app; neste primeiro ciclo ele pode viver no Django Admin do backend, enquanto o app foca a experiencia do owner e dos membros do workspace.
 - `README.md` contem setup local, scripts, rotas principais e notas de integracao com o backend.
@@ -132,6 +133,7 @@ pnpm start
 
 - Prioridade 1: evoluir a experiencia administrativa para um painel master interno e, no app, ampliar a area de configuracoes para owners gerenciarem membros, convites, papeis e configuracoes do workspace.
 - A primeira entrega dessa evolucao agora usa a propria tela `/settings` para listar membros, alterar papeis, remover acessos e enviar/revogar convites quando o usuario atual for owner.
+- O fluxo de aceite de convite deve suportar links abertos: quando o convite nao estiver atrelado a um e-mail, a tela `/accept-invite` precisa coletar o e-mail antes de criar a conta.
 - Prioridade 2: desenhar no front os fluxos de permissao por papel e estados de convite/aceite antes de abrir o produto para mais usuarios.
 - Prioridade 3: integrar billing com Stripe no app, incluindo leitura de assinatura, trial, plano ativo e cobranca por numero adicional.
 - Prioridade 4: preparar a UX de trial para pequenos estabelecimentos reais, com onboarding simples e limites claros de uso.
