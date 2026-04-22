@@ -122,6 +122,7 @@ pnpm start
 - Auth usa access token em memoria e refresh token em cookie `HttpOnly` gerenciado pelo backend; em dev, usar o mesmo host (`localhost`) no front e na API para o cookie `SameSite=Lax`.
 - O contexto do usuario autenticado fica em cache de memoria no `AuthProvider`; nao persistir usuario ou tokens em `localStorage`.
 - Dashboard, contatos, disparos, WhatsApp e configuracoes devem preferir stale-while-revalidate com cache em memoria de sessao; estados de loading plenos devem aparecer principalmente no primeiro carregamento real, nao em toda troca de rota interna.
+- Mudancas de autenticacao devem limpar o cache de sessao em memoria, para impedir que uma conta veja brevemente dados da sessao anterior ao trocar de usuario no mesmo navegador.
 - Login e aceite de convite devem respeitar o tema bootstrapado no `html`, inclusive antes da autenticacao.
 - Favicon e configurado em `app/layout.tsx` via metadata usando os SVGs em `public/`; nao ha `app/favicon.ico` no estado atual.
 - Suite basica de testes cobre CSV/importacao de contatos, payload de contatos, utils de campanha, normalizacao de detalhes de campanha e regras principais do hook do modal de campanha.

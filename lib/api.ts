@@ -1,3 +1,5 @@
+import { clearSessionCache } from "@/lib/session-cache";
+
 const API_URL = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8000";
 
 export type Workspace = {
@@ -307,11 +309,13 @@ export function getAccessToken() {
 
 export function saveTokens(tokens: Pick<AuthResponse, "access">) {
   accessToken = tokens.access;
+  clearSessionCache();
   removeLegacyStoredTokens();
 }
 
 export function clearTokens() {
   accessToken = null;
+  clearSessionCache();
   removeLegacyStoredTokens();
 }
 
