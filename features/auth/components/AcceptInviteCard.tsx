@@ -48,15 +48,17 @@ export function AcceptInviteCard() {
     setIsSubmitting(true);
 
     try {
+      const payload = {
+        token,
+        full_name: fullName,
+        username,
+        password,
+        ...(invitation?.is_open_link ? { email } : {}),
+      };
+
       const response = await apiRequest<AuthResponse>("/api/invitations/accept/", {
         method: "POST",
-        body: JSON.stringify({
-          token,
-          email,
-          full_name: fullName,
-          username,
-          password,
-        }),
+        body: JSON.stringify(payload),
       });
 
       saveTokens(response);
