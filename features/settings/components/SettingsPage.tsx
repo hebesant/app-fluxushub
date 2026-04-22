@@ -129,6 +129,16 @@ export function SettingsPage() {
       ),
     [invitations, workspace]
   );
+  const currentRoleLabel = useMemo(() => {
+    const role = currentWorkspaceMembership?.role;
+    if (role === "owner") {
+      return "Owner";
+    }
+    if (role === "admin") {
+      return "Admin";
+    }
+    return "Member";
+  }, [currentWorkspaceMembership]);
 
   useEffect(() => {
     const token = getAccessToken();
@@ -336,8 +346,55 @@ export function SettingsPage() {
             title="Workspace"
             description="Dados gerais da base atual."
           >
-            <InfoRow label="Nome" value={workspaceName} />
-            <InfoRow label="Status" value="Ativo" />
+            <div className="space-y-5">
+              <div className="rounded-lg border border-border bg-muted/45 p-4 dark:border-white/10 dark:bg-neutral-950/40">
+                <div className="flex flex-col gap-3 lg:flex-row lg:items-start lg:justify-between">
+                  <div>
+                    <p className="font-medium text-foreground dark:text-white">
+                      {workspaceName}
+                    </p>
+                    <p className="mt-1 text-sm text-muted-foreground">
+                      Base principal usada para contatos, disparos e equipe.
+                    </p>
+                  </div>
+                  <div className="flex flex-wrap items-center gap-2">
+                    <Badge
+                      variant={workspace?.is_active === false ? "destructive" : "default"}
+                    >
+                      {workspace?.is_active === false ? "Inativo" : "Ativo"}
+                    </Badge>
+                    <Badge variant="outline">{currentRoleLabel}</Badge>
+                  </div>
+                </div>
+              </div>
+
+              <div className="grid gap-3 lg:grid-cols-2">
+                <InfoCard
+                  label="Slug"
+                  value={workspace?.slug || "-"}
+                  helper="Identificador interno do workspace."
+                />
+                <InfoCard
+                  label="Documento"
+                  value={workspace?.document || "-"}
+                  helper="Campo de identificacao comercial da base."
+                />
+                <InfoCard
+                  label="Modo padrao"
+                  value={selectedMode?.name ?? "Lento"}
+                  helper="Usado como padrao nas novas campanhas."
+                />
+                <InfoCard
+                  label="Criado em"
+                  value={
+                    workspace?.created_at
+                      ? new Date(workspace.created_at).toLocaleDateString("pt-BR")
+                      : "-"
+                  }
+                  helper="Data de criacao do workspace atual."
+                />
+              </div>
+            </div>
           </SettingsPanel>
         ) : null}
 
@@ -627,8 +684,44 @@ export function SettingsPage() {
             title="Conta"
             description="Usuario conectado neste painel."
           >
-            <InfoRow label="Nome" value={name} />
-            <InfoRow label="E-mail" value={user?.email ?? "-"} />
+            <div className="space-y-5">
+              <div className="rounded-lg border border-border bg-muted/45 p-4 dark:border-white/10 dark:bg-neutral-950/40">
+                <div className="flex flex-col gap-3 lg:flex-row lg:items-start lg:justify-between">
+                  <div>
+                    <p className="font-medium text-foreground dark:text-white">
+                      {name}
+                    </p>
+                    <p className="mt-1 text-sm text-muted-foreground">
+                      Usuario autenticado com acesso ao workspace atual.
+                    </p>
+                  </div>
+                  <Badge variant="outline">{currentRoleLabel}</Badge>
+                </div>
+              </div>
+
+              <div className="grid gap-3 lg:grid-cols-2">
+                <InfoCard
+                  label="Nome completo"
+                  value={name}
+                  helper="Identificacao exibida na area autenticada."
+                />
+                <InfoCard
+                  label="E-mail"
+                  value={user?.email ?? "-"}
+                  helper="Usado para login e recebimento de convites."
+                />
+                <InfoCard
+                  label="Username"
+                  value={user?.username ?? "-"}
+                  helper="Identificador interno da conta."
+                />
+                <InfoCard
+                  label="Workspace atual"
+                  value={workspaceName}
+                  helper="Base principal vinculada a esta sessao."
+                />
+              </div>
+            </div>
           </SettingsPanel>
         ) : null}
       </div>
@@ -668,13 +761,22 @@ function SettingsPanel({
   );
 }
 
-function InfoRow({ label, value }: { label: string; value: string }) {
+function InfoCard({
+  label,
+  value,
+  helper,
+}: {
+  label: string;
+  value: string;
+  helper: string;
+}) {
   return (
-    <div className="flex items-center justify-between gap-3 rounded-lg border border-border bg-muted/45 px-3 py-2 dark:border-white/10 dark:bg-neutral-950/40">
-      <span className="text-sm text-muted-foreground">{label}</span>
-      <span className="truncate text-sm font-medium text-foreground dark:text-white">
+    <div className="rounded-lg border border-border bg-muted/45 p-4 dark:border-white/10 dark:bg-neutral-950/40">
+      <p className="text-sm text-muted-foreground">{label}</p>
+      <p className="mt-2 break-words text-sm font-medium text-foreground dark:text-white">
         {value}
-      </span>
+      </p>
+      <p className="mt-2 text-xs leading-5 text-muted-foreground">{helper}</p>
     </div>
   );
 }
