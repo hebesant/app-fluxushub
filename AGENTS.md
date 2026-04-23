@@ -106,6 +106,7 @@ pnpm start
 - Dashboard esta dividido em API, hook, utilitarios e componentes menores.
 - Contatos suportam listagem, busca, filtros, importacao, tags/listas e acoes em massa.
 - Campanhas suportam criacao em etapas, alvos por tag/lista/todos, preview, midia, modo de envio, agendamento unico, detalhes, envio, cancelamento e reenvio de falhas.
+- A UI de modo de envio deve permanecer simples para o MVP: o usuario escolhe apenas `Lento`, `Normal` ou `Rapido`, sem ver numeros de delay ou lote. Por baixo dos panos, o backend usa intervalo aleatorio entre `2` e `7` segundos entre mensagens e diferencia os modos por lotes de `10`, `20` e `30`.
 - No fluxo por tag, a interface deve permitir selecionar multiplas tags; o backend continua responsavel por deduplicar contatos que caiam em mais de uma tag selecionada.
 - Na interface, o modulo `/campaigns` vem sendo apresentado como area de `Disparos`, mantendo a mesma estrutura tecnica por baixo.
 - Modal de campanha esta dividido entre componente de composicao, hook de estado/acoes e subcomponentes de header/footer/steps.

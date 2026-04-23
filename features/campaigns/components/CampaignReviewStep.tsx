@@ -107,15 +107,14 @@ export function CampaignReviewStep({
                     {mode.name}
                   </span>
                   <span className="mt-1 block text-xs text-muted-foreground">
-                    {mode.delay} entre mensagens
+                    {mode.detail}
                   </span>
                 </button>
               );
             })}
           </div>
           <p className="mt-2 text-xs text-muted-foreground">
-            Lento e recomendado para comecar. O modo escolhido neste disparo
-            sobrescreve o padrao.
+            O modo escolhido neste disparo sobrescreve o padrao do workspace.
           </p>
         </div>
 

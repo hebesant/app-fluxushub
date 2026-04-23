@@ -6,20 +6,17 @@ export const concreteSendModes = [
   {
     id: "slow",
     name: "Lento",
-    delay: "12s",
-    detail: "Recomendado para comecar.",
+    detail: "Mais conservador para comecar.",
   },
   {
     id: "normal",
     name: "Normal",
-    delay: "8s",
-    detail: "Equilibrio para campanhas pequenas.",
+    detail: "Equilibrio para a maioria dos disparos.",
   },
   {
     id: "fast",
     name: "Rapido",
-    delay: "5s",
-    detail: "Use com cautela.",
+    detail: "Maior ritmo para bases mais quentes.",
   },
 ] as const;
 
@@ -88,7 +85,7 @@ export function mediaLabel(mediaType: CampaignForm["media_type"]) {
 
 export function sendModeLabel(sendMode: CampaignForm["send_mode"]) {
   const option = concreteSendModes.find((item) => item.id === sendMode);
-  return `${option?.name ?? "Lento"} ${option?.delay ?? "12s"}`;
+  return option?.name ?? "Lento";
 }
 
 export function scheduleLabel(

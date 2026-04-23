@@ -72,9 +72,9 @@ describe("campaign form utils", () => {
     expect(mediaLabel("none")).toBe("Somente texto");
     expect(mediaLabel("image")).toBe("Imagem com legenda");
     expect(mediaLabel("video")).toBe("Video MP4 com legenda");
-    expect(sendModeLabel("slow")).toBe("Lento 12s");
-    expect(sendModeLabel("normal")).toBe("Normal 8s");
-    expect(sendModeLabel("fast")).toBe("Rapido 5s");
+    expect(sendModeLabel("slow")).toBe("Lento");
+    expect(sendModeLabel("normal")).toBe("Normal");
+    expect(sendModeLabel("fast")).toBe("Rapido");
     expect(scheduleLabel(baseForm, "America/Sao_Paulo")).toBe("Enviar agora");
     expect(
       scheduleLabel(

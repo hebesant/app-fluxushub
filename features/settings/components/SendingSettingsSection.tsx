@@ -54,9 +54,6 @@ export function SendingSettingsSection({
                       {mode.name}
                     </p>
                   </div>
-                  <p className="mt-1 text-sm text-muted-foreground">
-                    {mode.delay} entre mensagens
-                  </p>
                 </div>
                 {isSelected ? (
                   <span className="flex size-7 shrink-0 items-center justify-center rounded-full bg-primary-500 text-white">
