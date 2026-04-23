@@ -43,6 +43,7 @@ export function useCampaignDetails({
     CampaignDetailCollection<CampaignEvent>
   >(() => createEmptyDetailCollection());
   const [isRecipientsModalOpen, setIsRecipientsModalOpen] = useState(false);
+  const [isPreviewModalOpen, setIsPreviewModalOpen] = useState(false);
   const [selectedCampaign, setSelectedCampaign] = useState<Campaign | null>(null);
   const [isPreviewLoading, setIsPreviewLoading] = useState(false);
 
@@ -133,6 +134,11 @@ export function useCampaignDetails({
     await loadPreview(campaign);
   }
 
+  async function openCampaignPreview(campaign: Campaign) {
+    setIsPreviewModalOpen(true);
+    await loadPreview(campaign);
+  }
+
   useEffect(() => {
     if (
       !isRecipientsModalOpen ||
@@ -167,11 +173,14 @@ export function useCampaignDetails({
     recipientDetails,
     eventDetails,
     isRecipientsModalOpen,
+    isPreviewModalOpen,
     selectedCampaign,
     isPreviewLoading,
     setSelectedCampaign,
     setIsRecipientsModalOpen,
+    setIsPreviewModalOpen,
     openCampaignDetails,
+    openCampaignPreview,
     loadRecipientsPage,
     loadEventsPage,
     loadPreview,

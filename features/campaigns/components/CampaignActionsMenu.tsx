@@ -12,6 +12,7 @@ import type { Campaign } from "@/lib/api";
 type CampaignActionsMenuProps = {
   campaign: Campaign;
   isBusy: boolean;
+  onPreview: () => void;
   onEdit: () => void;
   onCancel: () => void;
   onSend: () => void;
@@ -22,6 +23,7 @@ type CampaignActionsMenuProps = {
 export function CampaignActionsMenu({
   campaign,
   isBusy,
+  onPreview,
   onEdit,
   onCancel,
   onSend,
@@ -53,6 +55,11 @@ export function CampaignActionsMenu({
         <DropdownMenuItem onSelect={onDetails}>
           <Eye className="size-4" />
           Ver detalhes
+        </DropdownMenuItem>
+
+        <DropdownMenuItem onSelect={onPreview}>
+          <Eye className="size-4" />
+          Ver preview
         </DropdownMenuItem>
 
         {canSend ? (

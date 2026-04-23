@@ -33,6 +33,10 @@ export function useCampaignRuntimeActions({
     details.setIsRecipientsModalOpen(false);
   }
 
+  function closePreviewModal() {
+    details.setIsPreviewModalOpen(false);
+  }
+
   return {
     preview: details.preview,
     recipients: details.recipients,
@@ -40,6 +44,7 @@ export function useCampaignRuntimeActions({
     recipientDetails: details.recipientDetails,
     eventDetails: details.eventDetails,
     isRecipientsModalOpen: details.isRecipientsModalOpen,
+    isPreviewModalOpen: details.isPreviewModalOpen,
     selectedCampaign: details.selectedCampaign,
     isPreviewLoading: details.isPreviewLoading,
     isPreparing: mutations.isPreparing,
@@ -50,6 +55,8 @@ export function useCampaignRuntimeActions({
     openRecipientsModal,
     closeRecipientsModal,
     openCampaignDetails: details.openCampaignDetails,
+    openCampaignPreview: details.openCampaignPreview,
+    closePreviewModal,
     loadRecipientsPage: details.loadRecipientsPage,
     loadEventsPage: details.loadEventsPage,
     loadPreview: details.loadPreview,

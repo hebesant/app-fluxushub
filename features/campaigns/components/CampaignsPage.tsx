@@ -6,6 +6,7 @@ import { useCampaignFormActions } from "../hooks/useCampaignFormActions";
 import { useCampaignRuntimeActions } from "../hooks/useCampaignRuntimeActions";
 import { useCampaignsData } from "../hooks/useCampaignsData";
 import { CampaignFormModal } from "./CampaignFormModal";
+import { CampaignPreviewModal } from "./CampaignPreviewModal";
 import { CampaignRecipientsModal } from "./CampaignRecipientsModal";
 import { CampaignsHeader } from "./CampaignsHeader";
 import { CampaignsListCard } from "./CampaignsListCard";
@@ -57,6 +58,7 @@ export function CampaignsPage() {
         onSend={runtimeActions.sendCampaign}
         onRetryFailed={runtimeActions.retryFailedCampaign}
         onDetails={runtimeActions.openCampaignDetails}
+        onPreview={runtimeActions.openCampaignPreview}
       />
 
       {formActions.isFormOpen ? (
@@ -87,6 +89,15 @@ export function CampaignsPage() {
           onRecipientsPageChange={runtimeActions.loadRecipientsPage}
           onEventsPageChange={runtimeActions.loadEventsPage}
           onClose={runtimeActions.closeRecipientsModal}
+        />
+      ) : null}
+
+      {runtimeActions.isPreviewModalOpen ? (
+        <CampaignPreviewModal
+          selectedCampaign={runtimeActions.selectedCampaign}
+          preview={runtimeActions.preview}
+          isPreviewLoading={runtimeActions.isPreviewLoading}
+          onClose={runtimeActions.closePreviewModal}
         />
       ) : null}
     </div>

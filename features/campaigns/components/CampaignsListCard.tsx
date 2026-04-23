@@ -39,6 +39,7 @@ type CampaignsListCardProps = {
   onSend: (campaign: Campaign) => void;
   onRetryFailed: (campaign: Campaign) => void;
   onDetails: (campaign: Campaign) => void;
+  onPreview: (campaign: Campaign) => void;
 };
 
 export function CampaignsListCard({
@@ -61,6 +62,7 @@ export function CampaignsListCard({
   onSend,
   onRetryFailed,
   onDetails,
+  onPreview,
 }: CampaignsListCardProps) {
   return (
     <Card className="border-border/70 bg-card/92 p-5 backdrop-blur dark:border-white/10 dark:bg-white/8">
@@ -182,6 +184,7 @@ export function CampaignsListCard({
                   <CampaignActionsMenu
                     campaign={campaign}
                     isBusy={busyCampaignId === campaign.id}
+                    onPreview={() => onPreview(campaign)}
                     onEdit={() => onEdit(campaign)}
                     onCancel={() => onCancel(campaign)}
                     onSend={() => onSend(campaign)}
