@@ -2,6 +2,7 @@
 
 import {
   Building2,
+  CreditCard,
   Gauge,
   Rocket,
   Shield,
@@ -13,7 +14,7 @@ import type { ComponentType, ReactNode } from "react";
 import { Card } from "@/components/ui/card";
 import { type Membership } from "@/lib/api";
 
-export type SettingsTab = "workspace" | "team" | "sending" | "account";
+export type SettingsTab = "workspace" | "team" | "sending" | "billing" | "account";
 export type SendMode = "slow" | "normal" | "fast";
 export type MvpAssignableRole = Extract<Membership["role"], "member" | "owner">;
 
@@ -53,6 +54,12 @@ export const settingsTabs: Array<{
     label: "Envio",
     description: "Modo padrao de campanhas.",
     icon: Gauge,
+  },
+  {
+    id: "billing",
+    label: "Billing",
+    description: "Plano, trial e cobranca.",
+    icon: CreditCard,
   },
   {
     id: "account",

@@ -1,5 +1,6 @@
 import {
   apiRequest,
+  type BillingSummary,
   type Invitation,
   type Membership,
   type Workspace,
@@ -68,5 +69,33 @@ export function deleteInvitation(token: string, invitationId: number) {
   return apiRequest<null>(`/api/invitations/${invitationId}/`, {
     method: "DELETE",
     token,
+  });
+}
+
+export function fetchBillingSummary(token: string, workspaceId: number) {
+  return apiRequest<BillingSummary>(`/api/billing/summary/?workspace=${workspaceId}`, {
+    token,
+  });
+}
+
+export function createBillingCheckoutSession(
+  token: string,
+  data: { workspace: number; extra_numbers: number }
+) {
+  return apiRequest<{ id: string; url: string }>("/api/billing/checkout-session/", {
+    method: "POST",
+    token,
+    body: JSON.stringify(data),
+  });
+}
+
+export function createBillingPortalSession(
+  token: string,
+  data: { workspace: number }
+) {
+  return apiRequest<{ url: string }>("/api/billing/portal-session/", {
+    method: "POST",
+    token,
+    body: JSON.stringify(data),
   });
 }

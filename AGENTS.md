@@ -93,6 +93,7 @@ pnpm start
 - Componentes React em PascalCase.
 - Hooks em `use...`.
 - Tipos exportados em TypeScript, com dados da API em snake_case para bater com o backend.
+- Ao trabalhar com billing/Stripe, consultar primeiro o MCP oficial da Stripe configurado no Codex antes de assumir comportamento de Checkout, Customer Portal, webhooks ou estados de assinatura.
 - UI com Tailwind classes inline e helpers `cn`.
 - Estilo visual baseado em dark mode, com suporte a light mode via classe no `html`.
 - Textos da interface estao majoritariamente em portugues.
@@ -114,12 +115,17 @@ pnpm start
 - Modal de campanha esta dividido entre componente de composicao, hook de estado/acoes e subcomponentes de header/footer/steps.
 - WhatsApp suporta criacao, conexao por QR Code, status, edicao, desconexao e exclusao de instancias.
 - Configuracoes incluem workspace, timezone do workspace, conta e modo padrao de envio.
+- Configuracoes agora tambem incluem uma aba de billing para owners, consumindo resumo do backend e CTAs para Stripe Checkout e Customer Portal.
+- A rota `/settings` agora tambem trata o retorno do Checkout por query params (`billing=success|cancel`), abre a aba de billing, mostra feedback ao owner e força um refresh do resumo antes de limpar a URL.
+- A aba de billing agora deve exibir tambem leitura operacional do estado atual da assinatura, incluindo datas de ciclo/trial e mensagens diferentes para `trial`, `active`, `past_due`, `canceled` e ausencia de assinatura Stripe.
 - Configuracoes agora incluem uma aba de equipe para owners gerenciarem membros, papeis e convites pendentes do workspace atual.
 - A tela de configuracoes nao deve concentrar toda a logica de dados e UI em um arquivo unico; manter `useSettingsData` como ponto de orquestracao e seções por aba em componentes separados.
 - A aba de equipe foi reposicionada para convites por link compartilhavel, nao envio de e-mail transacional; owner escolhe papel e expiracao por presets e compartilha manualmente o link.
 - No MVP, o app nao deve expor o papel `admin` na interface de configuracoes; a UX trabalha com `owner` e `member`, embora o papel `admin` continue existindo no backend para futura expansao.
 - Na pratica, selects e acoes da aba `Equipe` devem oferecer apenas `owner` e `member`; se aparecer algum membership legado com papel `admin`, a UI pode exibi-lo como contexto, mas nao deve incentivar novas atribuicoes desse papel.
 - O proximo ciclo de produto/front esta orientado por administracao de usuarios/workspaces, convites/permissoes e billing real.
+- Decisao atual para billing real: usar Stripe Checkout para adesao inicial, Customer Portal para autoatendimento e refletir no app apenas o estado sincronizado pelo backend.
+- O modelo comercial atual planejado no app e: `R$ 70/mes` com `1` numero incluso por workspace e `R$ 50/mes` por numero adicional.
 - Decisao atual de produto: o painel master interno nao precisa nascer no app; neste primeiro ciclo ele pode viver no Django Admin do backend, enquanto o app foca a experiencia do owner e dos membros do workspace.
 - `README.md` contem setup local, scripts, rotas principais e notas de integracao com o backend.
 - `.env.example` documenta `NEXT_PUBLIC_API_URL`.
@@ -148,6 +154,9 @@ pnpm start
 - Quando funcionalidades mais sensiveis entrarem no produto, o papel `admin` pode voltar a ser exposto na UX; ate la, evitar complexidade artificial de permissao no app.
 - Prioridade 2: desenhar no front os fluxos de permissao por papel e estados de convite/aceite antes de abrir o produto para mais usuarios.
 - Prioridade 3: integrar billing com Stripe no app, incluindo leitura de assinatura, trial, plano ativo e cobranca por numero adicional.
+- A evolucao de billing no app deve usar o MCP oficial da Stripe como apoio preferencial para docs e fluxos atuais, mantendo o backend da Fluxus Hub como fonte de verdade do estado da assinatura.
+- A primeira iteracao da UX de billing deve focar owner e workspace: ver plano atual, numeros inclusos, numeros extras, status/trial, CTA para Checkout e CTA para Customer Portal, sem logica critica de billing apenas no front.
+- A Fase 1 da UX de billing no app ja deve assumir esse recorte: owner consulta `/api/billing/summary/`, abre Checkout para adesao/retomada e abre Customer Portal para autogerenciamento posterior.
 - Prioridade 4: preparar a UX de trial para pequenos estabelecimentos reais, com onboarding simples e limites claros de uso.
 - Fase 1 do app deve focar a aba de configuracoes do owner: membros, convites, papeis, perfil do workspace e visibilidade de limites/plano.
 - O agendamento deve continuar simples neste ciclo: envio unico, sem recorrencia, sem cron livre e sem timezone por usuario; o fuso vem do workspace.

@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { toast as sonnerToast } from "sonner";
 import {
+  type BillingSummary,
   formatApiError,
   getAccessToken,
   type Invitation,
@@ -13,7 +14,10 @@ import { useAuth } from "@/lib/auth";
 import { readSessionCache, writeSessionCache } from "@/lib/session-cache";
 import { concreteSendModes } from "@/features/campaigns/components/campaignFormUtils";
 import {
+  createBillingCheckoutSession,
+  createBillingPortalSession,
   createInvitation,
+  fetchBillingSummary,
   deleteInvitation,
   fetchInvitations,
   fetchMemberships,
@@ -37,8 +41,13 @@ type SettingsTeamCache = {
   invitations: Invitation[];
 };
 
+type SettingsBillingCache = {
+  billingSummary: BillingSummary | null;
+};
+
 const settingsWorkspaceCacheKey = "settings:workspace";
 const settingsTeamCacheKey = "settings:team";
+const settingsBillingCacheKey = "settings:billing";
 
 export function useSettingsData() {
   const { user } = useAuth();
@@ -46,6 +55,8 @@ export function useSettingsData() {
     settingsWorkspaceCacheKey
   );
   const cachedTeamData = readSessionCache<SettingsTeamCache>(settingsTeamCacheKey);
+  const cachedBillingData =
+    readSessionCache<SettingsBillingCache>(settingsBillingCacheKey);
   const [selectedSendMode, setSelectedSendMode] = useState<SendMode>("slow");
   const [selectedTimezone, setSelectedTimezone] = useState("America/Sao_Paulo");
   const [workspace, setWorkspace] = useState<Workspace | null>(
@@ -57,16 +68,23 @@ export function useSettingsData() {
   const [invitations, setInvitations] = useState<Invitation[]>(
     cachedTeamData?.value.invitations ?? []
   );
+  const [billingSummary, setBillingSummary] = useState<BillingSummary | null>(
+    cachedBillingData?.value.billingSummary ?? null
+  );
   const [isLoadingWorkspace, setIsLoadingWorkspace] = useState(!cachedWorkspaceData);
   const [isLoadingTeam, setIsLoadingTeam] = useState(!cachedTeamData);
+  const [isLoadingBilling, setIsLoadingBilling] = useState(!cachedBillingData);
   const [isSavingSendMode, setIsSavingSendMode] = useState(false);
   const [isSavingTimezone, setIsSavingTimezone] = useState(false);
   const [inviteEmail, setInviteEmail] = useState("");
   const [inviteRole, setInviteRole] = useState<MvpAssignableRole>("member");
   const [inviteExpiry, setInviteExpiry] = useState<30 | 120 | 1440 | 10080>(1440);
   const [isCreatingInvite, setIsCreatingInvite] = useState(false);
+  const [isCreatingCheckout, setIsCreatingCheckout] = useState(false);
+  const [isOpeningPortal, setIsOpeningPortal] = useState(false);
   const [pendingActionId, setPendingActionId] = useState<number | null>(null);
   const [latestInviteLink, setLatestInviteLink] = useState("");
+  const [extraNumbersDraft, setExtraNumbersDraft] = useState(0);
 
   const workspaceName =
     workspace?.name ?? user?.memberships[0]?.workspace_name ?? "Workspace";
@@ -85,6 +103,7 @@ export function useSettingsData() {
     [user, workspace]
   );
   const canManageTeam = currentWorkspaceMembership?.role === "owner";
+  const canManageBilling = currentWorkspaceMembership?.role === "owner";
   const workspaceMemberships = useMemo(
     () => memberships.filter((membership) => membership.workspace === workspace?.id),
     [memberships, workspace]
@@ -166,6 +185,56 @@ export function useSettingsData() {
       })
       .finally(() => setIsLoadingTeam(false));
   }, []);
+
+  useEffect(() => {
+    const token = getAccessToken();
+    const cachedEntry =
+      readSessionCache<SettingsBillingCache>(settingsBillingCacheKey);
+
+    if (!token || !workspace || !canManageBilling) {
+      setIsLoadingBilling(false);
+      return;
+    }
+
+    if (!cachedEntry) {
+      setIsLoadingBilling(true);
+    }
+
+    fetchBillingSummary(token, workspace.id)
+      .then((summary) => {
+        setBillingSummary(summary);
+        setExtraNumbersDraft(summary.extra_numbers);
+        writeSessionCache(settingsBillingCacheKey, {
+          billingSummary: summary,
+        });
+      })
+      .catch((requestError) => {
+        sonnerToast.error(formatApiError(requestError));
+      })
+      .finally(() => setIsLoadingBilling(false));
+  }, [workspace, canManageBilling]);
+
+  async function refreshBilling() {
+    const token = getAccessToken();
+
+    if (!token || !workspace || !canManageBilling) {
+      return;
+    }
+
+    setIsLoadingBilling(true);
+    try {
+      const summary = await fetchBillingSummary(token, workspace.id);
+      setBillingSummary(summary);
+      setExtraNumbersDraft(summary.extra_numbers);
+      writeSessionCache(settingsBillingCacheKey, {
+        billingSummary: summary,
+      });
+    } catch (requestError) {
+      sonnerToast.error(formatApiError(requestError));
+    } finally {
+      setIsLoadingBilling(false);
+    }
+  }
 
   async function saveSendMode() {
     const token = getAccessToken();
@@ -257,6 +326,49 @@ export function useSettingsData() {
     }
   }
 
+  async function openBillingCheckout() {
+    const token = getAccessToken();
+
+    if (!token || !workspace) {
+      sonnerToast.error("Workspace nao encontrado para este usuario.");
+      return;
+    }
+
+    setIsCreatingCheckout(true);
+
+    try {
+      const response = await createBillingCheckoutSession(token, {
+        workspace: workspace.id,
+        extra_numbers: extraNumbersDraft,
+      });
+      window.location.href = response.url;
+    } catch (requestError) {
+      sonnerToast.error(formatApiError(requestError));
+      setIsCreatingCheckout(false);
+    }
+  }
+
+  async function openBillingPortal() {
+    const token = getAccessToken();
+
+    if (!token || !workspace) {
+      sonnerToast.error("Workspace nao encontrado para este usuario.");
+      return;
+    }
+
+    setIsOpeningPortal(true);
+
+    try {
+      const response = await createBillingPortalSession(token, {
+        workspace: workspace.id,
+      });
+      window.location.href = response.url;
+    } catch (requestError) {
+      sonnerToast.error(formatApiError(requestError));
+      setIsOpeningPortal(false);
+    }
+  }
+
   async function handleMembershipRoleChange(
     membershipId: number,
     role: Membership["role"]
@@ -345,6 +457,7 @@ export function useSettingsData() {
   return {
     user,
     workspace,
+    billingSummary,
     workspaceName,
     name,
     selectedSendMode,
@@ -357,6 +470,7 @@ export function useSettingsData() {
     workspaceInvitations,
     currentRoleLabel,
     canManageTeam,
+    canManageBilling,
     visibleRoleOptions,
     inviteEmail,
     setInviteEmail,
@@ -366,13 +480,21 @@ export function useSettingsData() {
     setInviteExpiry,
     isLoadingWorkspace,
     isLoadingTeam,
+    isLoadingBilling,
     isSavingSendMode,
     isSavingTimezone,
     isCreatingInvite,
+    isCreatingCheckout,
+    isOpeningPortal,
     pendingActionId,
     latestInviteLink,
+    extraNumbersDraft,
     saveSendMode,
     saveTimezone,
+    setExtraNumbersDraft,
+    refreshBilling,
+    openBillingCheckout,
+    openBillingPortal,
     handleInviteSubmit,
     handleMembershipRoleChange,
     handleMembershipRemove,

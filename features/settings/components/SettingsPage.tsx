@@ -1,7 +1,10 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import { toast as sonnerToast } from "sonner";
 import { AccountSettingsSection } from "./AccountSettingsSection";
+import { BillingSettingsSection } from "./BillingSettingsSection";
 import { SendingSettingsSection } from "./SendingSettingsSection";
 import { SettingsSidebar } from "./SettingsSidebar";
 import { TeamSettingsSection } from "./TeamSettingsSection";
@@ -10,8 +13,38 @@ import { type SettingsTab } from "./settingsShared";
 import { useSettingsData } from "../hooks/useSettingsData";
 
 export function SettingsPage() {
-  const [activeTab, setActiveTab] = useState<SettingsTab>("workspace");
+  const router = useRouter();
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
+  const [activeTab, setActiveTab] = useState<SettingsTab>(() =>
+    searchParams.get("billing") ? "billing" : "workspace"
+  );
   const settings = useSettingsData();
+
+  useEffect(() => {
+    const billingState = searchParams.get("billing");
+
+    if (!billingState) {
+      return;
+    }
+
+    if (billingState === "success") {
+      const sessionId = searchParams.get("session_id");
+      sonnerToast.success(
+        sessionId
+          ? `Checkout concluido. Sessao ${sessionId} recebida, atualizando billing.`
+          : "Checkout concluido. Atualizando billing do workspace."
+      );
+      void settings.refreshBilling();
+    }
+
+    if (billingState === "cancel") {
+      sonnerToast.message("Checkout cancelado. Nenhuma cobranca foi alterada.");
+      void settings.refreshBilling();
+    }
+
+    router.replace(pathname);
+  }, [pathname, router, searchParams, settings]);
 
   return (
     <div className="space-y-6">
@@ -79,6 +112,20 @@ export function SettingsPage() {
             isSavingSendMode={settings.isSavingSendMode}
             workspace={settings.workspace}
             onSave={settings.saveSendMode}
+          />
+        ) : null}
+
+        {activeTab === "billing" ? (
+          <BillingSettingsSection
+            canManageBilling={settings.canManageBilling}
+            isLoadingBilling={settings.isLoadingBilling}
+            billingSummary={settings.billingSummary}
+            extraNumbersDraft={settings.extraNumbersDraft}
+            onExtraNumbersDraftChange={settings.setExtraNumbersDraft}
+            isCreatingCheckout={settings.isCreatingCheckout}
+            isOpeningPortal={settings.isOpeningPortal}
+            onCreateCheckout={settings.openBillingCheckout}
+            onOpenPortal={settings.openBillingPortal}
           />
         ) : null}
 

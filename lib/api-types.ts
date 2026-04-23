@@ -9,6 +9,42 @@ export type Workspace = {
   created_at: string;
 };
 
+export type Plan = {
+  id: number;
+  name: string;
+  base_price: string;
+  included_numbers: number;
+  additional_number_price: string;
+  is_active: boolean;
+};
+
+export type Subscription = {
+  id: number;
+  workspace: number;
+  workspace_name: string;
+  plan: number;
+  plan_name: string;
+  extra_numbers: number;
+  allowed_numbers: number;
+  status: "trial" | "active" | "past_due" | "canceled";
+  starts_at: string;
+  ends_at: string | null;
+  created_at: string;
+};
+
+export type BillingSummary = {
+  workspace: number;
+  workspace_name: string;
+  plan: Plan;
+  subscription: Subscription | null;
+  included_numbers: number;
+  extra_numbers: number;
+  allowed_numbers: number;
+  estimated_monthly_total: string;
+  is_stripe_configured: boolean;
+  has_stripe_customer: boolean;
+};
+
 export type Membership = {
   id: number;
   user: number;
