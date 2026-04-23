@@ -123,8 +123,9 @@ export function SettingsPage() {
             extraNumbersDraft={settings.extraNumbersDraft}
             onExtraNumbersDraftChange={settings.setExtraNumbersDraft}
             isCreatingCheckout={settings.isCreatingCheckout}
+            isUpdatingExtraNumbers={settings.isUpdatingExtraNumbers}
             isOpeningPortal={settings.isOpeningPortal}
-            onCreateCheckout={settings.openBillingCheckout}
+            onPrimaryAction={settings.handleBillingPrimaryAction}
             onOpenPortal={settings.openBillingPortal}
           />
         ) : null}

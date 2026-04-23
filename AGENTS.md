@@ -118,6 +118,7 @@ pnpm start
 - Configuracoes agora tambem incluem uma aba de billing para owners, consumindo resumo do backend e CTAs para Stripe Checkout e Customer Portal.
 - A rota `/settings` agora tambem trata o retorno do Checkout por query params (`billing=success|cancel`), abre a aba de billing, mostra feedback ao owner e força um refresh do resumo antes de limpar a URL.
 - A aba de billing agora deve exibir tambem leitura operacional do estado atual da assinatura, incluindo datas de ciclo/trial e mensagens diferentes para `trial`, `active`, `past_due`, `canceled` e ausencia de assinatura Stripe.
+- Quando ja existir uma assinatura Stripe ativa/sincronizada, a aba de billing deve atualizar `extra_numbers` diretamente pela API do backend, sem abrir um novo Checkout so para alterar a quantidade; Checkout continua para primeira adesao/retomada e o Customer Portal segue como canal de autoatendimento.
 - Configuracoes agora incluem uma aba de equipe para owners gerenciarem membros, papeis e convites pendentes do workspace atual.
 - A tela de configuracoes nao deve concentrar toda a logica de dados e UI em um arquivo unico; manter `useSettingsData` como ponto de orquestracao e seções por aba em componentes separados.
 - A aba de equipe foi reposicionada para convites por link compartilhavel, nao envio de e-mail transacional; owner escolhe papel e expiracao por presets e compartilha manualmente o link.

@@ -45,6 +45,11 @@ export type BillingSummary = {
   has_stripe_customer: boolean;
 };
 
+export type BillingExtraNumbersUpdateResponse = {
+  subscription: Subscription;
+  summary: BillingSummary;
+};
+
 export type Membership = {
   id: number;
   user: number;

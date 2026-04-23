@@ -15,8 +15,9 @@ export function BillingSettingsSection({
   extraNumbersDraft,
   onExtraNumbersDraftChange,
   isCreatingCheckout,
+  isUpdatingExtraNumbers,
   isOpeningPortal,
-  onCreateCheckout,
+  onPrimaryAction,
   onOpenPortal,
 }: {
   canManageBilling: boolean;
@@ -25,10 +26,23 @@ export function BillingSettingsSection({
   extraNumbersDraft: number;
   onExtraNumbersDraftChange: (value: number) => void;
   isCreatingCheckout: boolean;
+  isUpdatingExtraNumbers: boolean;
   isOpeningPortal: boolean;
-  onCreateCheckout: () => void;
+  onPrimaryAction: () => void;
   onOpenPortal: () => void;
 }) {
+  const hasManagedStripeSubscription =
+    billingSummary?.subscription != null &&
+    billingSummary.subscription.status !== "canceled" &&
+    billingSummary.has_stripe_customer;
+  const primaryButtonLabel = hasManagedStripeSubscription
+    ? isUpdatingExtraNumbers
+      ? "Atualizando extras..."
+      : "Atualizar numeros extras"
+    : isCreatingCheckout
+      ? "Abrindo checkout..."
+      : "Ir para checkout";
+
   return (
     <SettingsPanel
       icon={CreditCard}
@@ -161,13 +175,15 @@ export function BillingSettingsSection({
 
                     <Button
                       type="button"
-                      onClick={onCreateCheckout}
+                      onClick={onPrimaryAction}
                       disabled={
-                        !billingSummary.is_stripe_configured || isCreatingCheckout
+                        !billingSummary.is_stripe_configured ||
+                        isCreatingCheckout ||
+                        isUpdatingExtraNumbers
                       }
                       className="h-11 bg-primary-500 text-white hover:bg-primary-400"
                     >
-                      {isCreatingCheckout ? "Abrindo checkout..." : "Assinar / Atualizar cobranca"}
+                      {primaryButtonLabel}
                     </Button>
 
                     <Button
@@ -188,8 +204,9 @@ export function BillingSettingsSection({
 
                   <p className="text-xs leading-5 text-muted-foreground">
                     O checkout cuida da primeira adesao ou da retomada da cobranca.
-                    Depois disso, o Customer Portal da Stripe vira o caminho principal
-                    para gerenciar pagamento e assinatura.
+                    Depois da assinatura ativa, este painel pode ajustar numeros
+                    extras diretamente e o Customer Portal da Stripe segue como
+                    caminho principal para pagamento e autoatendimento.
                   </p>
                 </div>
               </div>

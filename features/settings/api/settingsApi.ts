@@ -1,5 +1,6 @@
 import {
   apiRequest,
+  type BillingExtraNumbersUpdateResponse,
   type BillingSummary,
   type Invitation,
   type Membership,
@@ -98,4 +99,18 @@ export function createBillingPortalSession(
     token,
     body: JSON.stringify(data),
   });
+}
+
+export function updateBillingExtraNumbers(
+  token: string,
+  data: { workspace: number; extra_numbers: number }
+) {
+  return apiRequest<BillingExtraNumbersUpdateResponse>(
+    "/api/billing/extra-numbers/",
+    {
+      method: "POST",
+      token,
+      body: JSON.stringify(data),
+    }
+  );
 }

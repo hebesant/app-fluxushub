@@ -17,6 +17,7 @@ import {
   createBillingCheckoutSession,
   createBillingPortalSession,
   createInvitation,
+  updateBillingExtraNumbers,
   fetchBillingSummary,
   deleteInvitation,
   fetchInvitations,
@@ -81,6 +82,7 @@ export function useSettingsData() {
   const [inviteExpiry, setInviteExpiry] = useState<30 | 120 | 1440 | 10080>(1440);
   const [isCreatingInvite, setIsCreatingInvite] = useState(false);
   const [isCreatingCheckout, setIsCreatingCheckout] = useState(false);
+  const [isUpdatingExtraNumbers, setIsUpdatingExtraNumbers] = useState(false);
   const [isOpeningPortal, setIsOpeningPortal] = useState(false);
   const [pendingActionId, setPendingActionId] = useState<number | null>(null);
   const [latestInviteLink, setLatestInviteLink] = useState("");
@@ -348,6 +350,48 @@ export function useSettingsData() {
     }
   }
 
+  async function updateExistingBillingExtraNumbers() {
+    const token = getAccessToken();
+
+    if (!token || !workspace) {
+      sonnerToast.error("Workspace nao encontrado para este usuario.");
+      return;
+    }
+
+    setIsUpdatingExtraNumbers(true);
+
+    try {
+      const response = await updateBillingExtraNumbers(token, {
+        workspace: workspace.id,
+        extra_numbers: extraNumbersDraft,
+      });
+      setBillingSummary(response.summary);
+      setExtraNumbersDraft(response.summary.extra_numbers);
+      writeSessionCache(settingsBillingCacheKey, {
+        billingSummary: response.summary,
+      });
+      sonnerToast.success("Numeros extras atualizados na assinatura.");
+    } catch (requestError) {
+      sonnerToast.error(formatApiError(requestError));
+    } finally {
+      setIsUpdatingExtraNumbers(false);
+    }
+  }
+
+  async function handleBillingPrimaryAction() {
+    const hasManagedStripeSubscription =
+      billingSummary?.subscription != null &&
+      billingSummary.subscription.status !== "canceled" &&
+      billingSummary.has_stripe_customer;
+
+    if (hasManagedStripeSubscription) {
+      await updateExistingBillingExtraNumbers();
+      return;
+    }
+
+    await openBillingCheckout();
+  }
+
   async function openBillingPortal() {
     const token = getAccessToken();
 
@@ -485,6 +529,7 @@ export function useSettingsData() {
     isSavingTimezone,
     isCreatingInvite,
     isCreatingCheckout,
+    isUpdatingExtraNumbers,
     isOpeningPortal,
     pendingActionId,
     latestInviteLink,
@@ -494,6 +539,7 @@ export function useSettingsData() {
     setExtraNumbersDraft,
     refreshBilling,
     openBillingCheckout,
+    handleBillingPrimaryAction,
     openBillingPortal,
     handleInviteSubmit,
     handleMembershipRoleChange,
