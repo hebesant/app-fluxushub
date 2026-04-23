@@ -1,16 +1,7 @@
 import type { Metadata } from "next";
-import { Geist, Inter } from "next/font/google";
 import "./globals.css";
 import { Toaster } from "@/components/ui/sonner";
 import { getThemeBootstrapScript } from "@/lib/theme";
-import { cn } from "@/lib/utils";
-
-const geist = Geist({ subsets: ["latin"], variable: "--font-sans" });
-
-const inter = Inter({
-  subsets: ["latin"],
-  variable: "--font-inter",
-});
 
 export const metadata: Metadata = {
   title: "Fluxus Hub",
@@ -33,11 +24,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html
-      lang="pt-BR"
-      suppressHydrationWarning
-      className={cn("font-sans", geist.variable)}
-    >
+    <html lang="pt-BR" suppressHydrationWarning className="font-sans">
       <head>
         <script
           dangerouslySetInnerHTML={{
@@ -45,7 +32,7 @@ export default function RootLayout({
           }}
         />
       </head>
-      <body className={cn(inter.className, "bg-neutral-950 text-white")}>
+      <body className="bg-neutral-950 text-white">
         {children}
         <Toaster richColors position="top-right" />
       </body>

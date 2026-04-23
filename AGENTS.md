@@ -84,6 +84,7 @@ pnpm start
 - Detalhes de campanha buscam campanha, preview, destinatarios e eventos em paralelo; destinatarios/eventos aceitam resposta paginada ou array legado.
 - O runtime de campanhas foi dividido entre hook de detalhes/polling e hook de mutacoes, para reduzir acoplamento no modulo operacional.
 - `next.config.ts` define build standalone, Strict Mode, remove `X-Powered-By`, habilita compressao e permite imagens de `/media/**` vindas da API local/producao.
+- O app evita `next/font/google` no estado atual para reduzir fragilidade de build em deploys Docker/VPS; a stack tipografica padrao deve vir de fontes locais/sistema.
 - Testes frontend usam Vitest em ambiente `jsdom`, com setup em `test/setup.ts`.
 
 ## Convencoes De Codigo Identificadas
